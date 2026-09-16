@@ -1,2 +1,55 @@
+Transformación al Modelo Relacional:  Notación de tablas con claves primarias (PK) y foráneas (FK)
+CLIENTE(
+    id_cliente PK,
+    dni U,
+    numero_telefono,
+    calle,
+    localidad,
+    provincia
+)
 
-![Diagrama Entidad Relación](../erdplus (6).png)
+PROVEEDOR(
+    id_proveedor PK,
+    cuit U,
+    calle,
+    localidad,
+    provincia
+)
+
+PRODUCTO(
+    id_producto PK,
+    nombre,
+    marca,
+    categoria,
+    color,
+    stock,
+    precio_venta
+)
+
+COMPRA(
+    id_compra PK,
+    id_proveedor FK,
+    fecha,
+    metodo_pago,
+    monto_total
+)
+
+DETALLE_COMPRA(
+    id_compra PK/FK,
+    id_producto PK/FK,
+    cantidad
+)
+
+VENTA(
+    id_venta PK,
+    id_cliente FK,
+    fecha,
+    metodo_pago,
+    monto_total
+)
+
+DETALLE_VENTA(
+    id_venta PK/FK,
+    id_producto PK/FK,
+    cantidad
+)
