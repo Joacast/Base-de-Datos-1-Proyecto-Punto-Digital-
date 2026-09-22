@@ -82,48 +82,30 @@ separando las operaciones de compra y venta de sus respectivos detalles.
 2FN: Eliminación de dependencias funcionales parciales en claves compuestas.
 3FN: Eliminación de dependencias transitivas en atributos no clave.
 
-# Tercera Forma Normal (3FN)
-## Etapa II – Modelado Conceptual y Lógico
-
-**Equipo:** 14  
-**Etapa:** 02  
-**DNI:** 44683566  
-
----
-
-### 1. Definición
+1. Definición
 Una relación se encuentra en **Tercera Forma Normal (3FN)** cuando ya cumple con la Segunda Forma Normal (2FN) y no presenta dependencias funcionales transitivas. 
-
 Una dependencia transitiva aparece cuando un atributo no clave depende de otro atributo no clave, y este último a su vez depende de la clave primaria.
-
-$$\text{Clave primaria} \longrightarrow \text{Atributo no clave A} \longrightarrow \text{Atributo no clave B}$$
+Clave primaria -> Atributo no clave A -> Atributo no clave B
 
 El objetivo de la 3FN es eliminar este tipo de dependencias para reducir la redundancia y evitar anomalías de actualización, inserción y borrado. Para lograrlo, los atributos que dependen de otro atributo no clave se separan en una nueva relación (tabla), manteniendo la vinculación mediante una clave foránea (FK).
 
----
-
-### 2. Aplicación de 3FN al modelo
+2. Aplicación de 3FN al modelo
 A partir del modelo relacional propuesto, se revisan las dependencias funcionales de cada relación. Los atributos no clave deben depender de manera directa y no transitiva de la clave primaria de su tabla:
 
-| Relación | Dependencia funcional principal | Evaluación en 3FN |
-| :--- | :--- | :--- |
-| **Producto** | `id_Producto` $\rightarrow$ `marca, categoría, color, stock` | **Cumple 3FN:** Los atributos dependen directamente de `id_Producto` y no se observa ninguna dependencia transitiva. |
-| **Cliente** | `id_Cliente` $\rightarrow$ `DNI_Cliente, numero_Telefono, calle, localidad, provincia` | **Cumple 3FN:** Los datos propios del cliente dependen directamente de su identificador (`id_Cliente`). |
-| **Proveedor** | `id_Proveedor` $\rightarrow$ `CUIT, calle, localidad, provincia` | **Cumple 3FN:** Los datos propios del proveedor dependen directamente de su identificador (`id_Proveedor`). |
-| **Registro_Venta** | `id_Registro_Venta` $\rightarrow$ `id_Cliente, id_Producto, fecha_Compra, cantidad` | **Cumple 3FN:** Los datos de cada venta dependen directamente de la clave del registro. |
-| **Registro_Compra** | `id_Registro_Compra` $\rightarrow$ `id_Proveedor, id_Producto, fecha, método_Pago, monto_Total` | **Cumple 3FN:** Los datos de cada compra al proveedor dependen de la clave del registro. |
+| Relación        | Dependencia funcional principal                                                  | Evaluación en 3FN                                                                                                |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Producto        | id_Producto -> marca, categoría, color, stock                                    | Cumple 3FN: Los atributos dependen directamente de `id_Producto` y no se observa ninguna dependencia transitiva. |
+| Cliente         | id_Cliente -> DNI_Cliente, numero_Telefono, calle, localidad, provincia          | Cumple 3FN: Los datos propios del cliente dependen directamente de su identificador (`id_Cliente`).              |
+| Proveedor       | id_Proveedor -> CUIT, calle, localidad, provincia                                | Cumple 3FN: Los datos propios del proveedor dependen directamente de su identificador (`id_Proveedor`).          |
+| Registro_Venta  | id_Registro_Venta -> id_Cliente, id_Producto, fecha_Compra, cantidad             | Cumple 3FN: Los datos de cada venta dependen directamente de la clave del registro.                              |
+| Registro_Compra | id_Registro_Compra -> id_Proveedor, id_Producto, fecha, método_Pago, monto_Total | Cumple 3FN: Los datos de cada compra al proveedor dependen de la clave del registro.                             |
 
----
+ 3. Esquema resultante en 3FN
+PRODUCTO (`id_Producto` PK, marca, categoría, color, stock)
+CLIENTE (`id_Cliente` PK, DNI_Cliente U, numero_Telefono, calle, localidad, provincia)
+PROVEEDOR (`id_Proveedor` PK, CUIT U, calle, localidad, provincia)
+REGISTRO_VENTA (`id_Registro_Venta` PK, `id_Cliente` FK, `id_Producto` FK, fecha_Compra, cantidad)
+REGISTRO_COMPRA (`id_Registro_Compra` PK, `id_Proveedor` FK, `id_Producto` FK, fecha, método_Pago, monto_Total)
 
-### 3. Esquema resultante en 3FN
-
-* **PRODUCTO** (`id_Producto` **PK**, marca, categoría, color, stock)
-* **CLIENTE** (`id_Cliente` **PK**, DNI_Cliente **U**, numero_Telefono, calle, localidad, provincia)
-* **PROVEEDOR** (`id_Proveedor` **PK**, CUIT **U**, calle, localidad, provincia)
-* **REGISTRO_VENTA** (`id_Registro_Venta` **PK**, `id_Cliente` **FK**, `id_Producto` **FK**, fecha_Compra, cantidad)
-* **REGISTRO_COMPRA** (`id_Registro_Compra` **PK**, `id_Proveedor` **FK**, `id_Producto` **FK**, fecha, método_Pago, monto_Total)
-
----
-
-### 4. Justificación
+4. Justificación
 En el esquema final no se identifican dependencias transitivas entre atributos no clave. Cada atributo descriptivo depende directamente de la clave primaria de su relación. De esta forma, el modelo alcanza la **Tercera Forma Normal (3FN)**, disminuyendo la redundancia y favoreciendo la consistencia e integridad de los datos.
