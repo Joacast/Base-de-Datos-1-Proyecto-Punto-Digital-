@@ -6,6 +6,7 @@ Transformación al Modelo Relacional
 
 Proceso de Normalización: 
 1FN: Eliminación de grupos repetitivos y garantía de atomicidad.
+
 PASO 1
 Antes de normalizar, podríamos tener registrada una venta de esta forma:
 VENTA NO NORMALIZADA
