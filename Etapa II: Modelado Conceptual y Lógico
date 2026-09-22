@@ -1,6 +1,8 @@
 Diagrama Entidad-Relación (DER)
 
 Transformación al Modelo Relacional
+![image alt](https://github.com/Joacast/Base-de-Datos-1-Proyecto-Punto-Digital-/blob/56c1bf0bae7dec30e12cb1321b0fa5613058944a/Modelo_Relacional.png)
+
 
 Proceso de Normalización: 
 1FN: Eliminación de grupos repetitivos y garantía de atomicidad.
