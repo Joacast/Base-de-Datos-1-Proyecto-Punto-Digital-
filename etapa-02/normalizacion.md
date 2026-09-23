@@ -96,7 +96,50 @@ Finalmente obtenemos las siguientes entidades:
 Y cada atributo contiene un único valor, sin listas ni grupos repetitivos.
 
 > **Conclusión:** El modelo se encuentra en **Primera Forma Normal (1FN)**, ya que todos sus atributos presentan valores atómicos y se eliminaron los grupos repetitivos, separando las operaciones de compra y venta de sus respectivos detalles.
-PROCESO DE NORMALIZACION
+
+
+## 2FN: Eliminación de dependencias funcionales
+
+### 1. Análisis de las tablas obtenidas en la 1FN
+Revisando el resultado de la 1FN, identificamos la clave primaria (PK) de cada tabla:
+•	CLIENTE -> PK: id_cliente (clave simple)
+•	PROVEEDOR -> PK: id_proveedor (clave simple)
+•	PRODUCTO -> PK: id_producto (clave simple)
+•	VENTA -> PK: id_venta (clave simple)
+•	COMPRA -> PK: id_compra (clave simple)
+•	DETALLE_VENTA -> PK compuesta: (id_venta, id_producto)
+•	DETALLE_COMPRA -> PK compuesta: (id_compra, id_producto)
+Las tablas con claves simples (cliente, proveedor, producto, venta, compra) cumplen automáticamente con la 2FN, ya que al tener un único atributo como clave no pueden existir dependencias parciales.
+
+### 2. Detección y resolución de dependencias parciales
+Analizamos las dos tablas intermedias que poseen claves compuestas:
+### A. Tabla DETALLE_VENTA
+•	Clave primaria (PK): (id_venta, id_producto)
+•	Atributos: id_venta, id_producto, cantidad
+•	Evaluación de dependencias:
+o	cantidad: depende directamente de la combinación de la venta y del producto específico que se está vendiendo. No depende solo del producto ni solo de la venta.
+Por lo tanto, la clave compuesta (id_venta, id_producto) determina completamente a cantidad. No existen dependencias parciales en esta tabla.
+
+### B. Tabla DETALLE_COMPRA
+•	Clave primaria (PK): (id_compra, id_producto)
+•	Atributos: id_compra, id_producto, cantidad
+•	Evaluación de dependencias:
+o	cantidad: depende de forma completa de qué compra se realizó y qué producto específico se incluyó en esa compra.
+Por lo tanto, la clave compuesta (id_compra, id_producto) determina completamente a cantidad. No existen dependencias parciales en esta tabla.
+
+### 3. Estado final en 2FN
+Dado que en las tablas con claves compuestas (DETALLE_VENTA y DETALLE_COMPRA) el atributo cantidad depende de la totalidad de la clave primaria y no de una parte de ella, el modelo no requiere la creación de nuevas tablas para alcanzar la 2FN.
+Las tablas quedan definidas de la siguiente manera:
+•	CLIENTE (id_cliente, dni, numero_telefono, provincia, localidad, calle)
+•	PROVEEDOR (id_proveedor, cuit, provincia, localidad, calle)
+•	PRODUCTO (id_producto, nombre, marca, categoria, color, precio_venta, stock)
+•	VENTA (id_venta, fecha, metodo_pago, monto_total, id_cliente)
+•	COMPRA (id_compra, fecha, metodo_pago, monto_total, id_proveedor)
+•	DETALLE_VENTA (id_venta, id_producto, cantidad)
+•	DETALLE_COMPRA (id_compra, id_producto, cantidad)
+
+## Conclusión de la 2FN:
+Se confirma que el modelo se encuentra formalmente en segunda forma normal (2FN), ya que todos los atributos no clave dependen funcionalmente de manera completa de sus respectivas claves primarias, no existiendo dependencias funcionales parciales.
 
 
 # Tercera Forma Normal (3FN)
