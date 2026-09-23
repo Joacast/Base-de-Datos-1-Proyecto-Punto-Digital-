@@ -78,14 +78,8 @@ todos sus atributos presentan valores atómicos y se eliminaron los grupos repet
 separando las operaciones de compra y venta de sus respectivos detalles.
 
 
-
 # Tercera Forma Normal (3FN)
 ## Etapa II – Modelado Conceptual y Lógico
-
-**Equipo:** 14  
-**Etapa:** 02  
-**DNI:** 44683566  
-
 ---
 
 ### 1. Definición
