@@ -111,6 +111,8 @@ Revisando el resultado de la 1FN, identificamos la clave primaria (PK) de cada t
 •	DETALLE_COMPRA -> PK compuesta: (id_compra, id_producto)
 Las tablas con claves simples (cliente, proveedor, producto, venta, compra) cumplen automáticamente con la 2FN, ya que al tener un único atributo como clave no pueden existir dependencias parciales.
 
+---
+
 ### 2. Detección y resolución de dependencias parciales
 Analizamos las dos tablas intermedias que poseen claves compuestas:
 ### A. Tabla DETALLE_VENTA
@@ -127,6 +129,8 @@ Por lo tanto, la clave compuesta (id_venta, id_producto) determina completamente
 o	cantidad: depende de forma completa de qué compra se realizó y qué producto específico se incluyó en esa compra.
 Por lo tanto, la clave compuesta (id_compra, id_producto) determina completamente a cantidad. No existen dependencias parciales en esta tabla.
 
+---
+
 ### 3. Estado final en 2FN
 Dado que en las tablas con claves compuestas (DETALLE_VENTA y DETALLE_COMPRA) el atributo cantidad depende de la totalidad de la clave primaria y no de una parte de ella, el modelo no requiere la creación de nuevas tablas para alcanzar la 2FN.
 Las tablas quedan definidas de la siguiente manera:
@@ -137,6 +141,8 @@ Las tablas quedan definidas de la siguiente manera:
 •	COMPRA (id_compra, fecha, metodo_pago, monto_total, id_proveedor)
 •	DETALLE_VENTA (id_venta, id_producto, cantidad)
 •	DETALLE_COMPRA (id_compra, id_producto, cantidad)
+
+---
 
 ## Conclusión de la 2FN:
 Se confirma que el modelo se encuentra formalmente en segunda forma normal (2FN), ya que todos los atributos no clave dependen funcionalmente de manera completa de sus respectivas claves primarias, no existiendo dependencias funcionales parciales.
