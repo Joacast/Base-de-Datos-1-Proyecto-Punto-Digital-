@@ -1,4 +1,5 @@
 PROCESO DE NORMALIZACION
+
 1FN: Eliminación de grupos repetitivos y garantía de atomicidad.
 
 PASO 1
