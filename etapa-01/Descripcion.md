@@ -1,4 +1,4 @@
-Descripción del caso:
+## Descripción del caso:
 
 El presente proyecto tiene como objetivo diseñar e implementar una base de datos para una tienda de productos electrónicos. La tienda comercializa productos como celulares, computadoras, accesorios, periféricos y otros dispositivos electrónicos de distintas marcas y categorías. 
 
