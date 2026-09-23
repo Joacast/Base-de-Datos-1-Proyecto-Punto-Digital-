@@ -43,7 +43,8 @@
 Decisión: Se definió la estructura PERSONA para centralizar los datos de contacto compartidos (domicilio, provincia, telefono).   Justificación: Normaliza el almacenamiento de personas en el sistema y evita duplicar campos de ubicación y contacto entre clientes y proveedores.
 
 ### Atributos de Categoría, Marca y Método de Pago:
-Decisión: Se decidió mantener categoria, marca y metodo_pago como atributos descriptivos directos en las entidades principales.   Justificación: Optimiza la lectura de datos frecuentes evitando un exceso de tablas de catálogo (JOINs innecesarios) en esta etapa del sistema, garantizando la simplicidad de las consultas directas.
+Decisión: Se decidió mantener categoria, marca y metodo_pago como atributos descriptivos directos en las entidades principales.
+Justificación: Optimiza la lectura de datos frecuentes evitando un exceso de tablas de catálogo (JOINs innecesarios) en esta etapa del sistema, garantizando la simplicidad de las consultas directas.
 
 ### Atributo Multivaluado para Canales de Contacto:
 Decisión: El atributo numero_telefono se contempló de forma flexible.
