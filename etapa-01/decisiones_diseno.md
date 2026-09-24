@@ -40,16 +40,21 @@
 ## Puntos Complementarios de Diseño (Alineación Conceptual y Lógica)
 
 ### Especialización / Jerarquía de Personas (CLIENTE y PROVEEDOR):
-Decisión: Se definió la estructura PERSONA para centralizar los datos de contacto compartidos (domicilio, provincia, telefono).   Justificación: Normaliza el almacenamiento de personas en el sistema y evita duplicar campos de ubicación y contacto entre clientes y proveedores.
+Decisión: Se definió la estructura PERSONA para centralizar los datos de contacto compartidos (domicilio, provincia, telefono). 
+
+Justificación: Normaliza el almacenamiento de personas en el sistema y evita duplicar campos de ubicación y contacto entre clientes y proveedores.
 
 ### Atributos de Categoría, Marca y Método de Pago:
 Decisión: Se decidió mantener categoria, marca y metodo_pago como atributos descriptivos directos en las entidades principales.
+
 Justificación: Optimiza la lectura de datos frecuentes evitando un exceso de tablas de catálogo (JOINs innecesarios) en esta etapa del sistema, garantizando la simplicidad de las consultas directas.
 
 ### Atributo Multivaluado para Canales de Contacto:
 Decisión: El atributo numero_telefono se contempló de forma flexible.
+
 Justificación: Permite capturar las vías de contacto necesarias para la gestión comercial con clientes y proveedores.
 
 ### Control Dinámico del Stock (RN.01):
 Decisión: El atributo stock se aloja de forma directa en la entidad PRODUCTO.
+
 Justificación: Permite la actualización inmediata de existencias ante cada transacción registrada de compra o venta, asegurando el cumplimiento directo de la regla de negocio RN.01.
