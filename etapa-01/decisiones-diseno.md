@@ -45,9 +45,11 @@ Decisión: Se definió la estructura PERSONA para centralizar los datos de conta
 Justificación: Normaliza el almacenamiento de personas en el sistema y evita duplicar campos de ubicación y contacto entre clientes y proveedores.
 
 ### Atributos de Categoría, Marca y Método de Pago:
-Decisión: Se decidió mantener categoria, marca y metodo_pago como atributos descriptivos directos en las entidades principales.
+Normalización de Catálogos (Categoría, Marca y Método de Pago):
 
-Justificación: Optimiza la lectura de datos frecuentes evitando un exceso de tablas de catálogo (JOINs innecesarios) en esta etapa del sistema, garantizando la simplicidad de las consultas directas.
+Decisión: Se decidió modelar CATEGORIA, MARCA y METODO_PAGO como entidades/catálogos independientes en lugar de atributos simples en texto plano.
+
+Justificación: Evita errores de tipeo y redundancia de datos (por ejemplo, escribir "Samsung", "samsung" o "Samsumg"), facilitando las búsquedas y el filtrado en el sistema.
 
 ### Atributo Multivaluado para Canales de Contacto:
 Decisión: El atributo numero_telefono se contempló de forma flexible.
