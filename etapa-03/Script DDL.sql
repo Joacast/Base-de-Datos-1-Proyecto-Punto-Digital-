@@ -1,3 +1,7 @@
+---------------------------------------------------------
+-- PROYECTO PUNTO DIGITAL - ETAPA III: IMPLEMENTACIÓN FÍSICA
+-- Script DDL: Creación de Tablas Base
+---------------------------------------------------------
 -- TABLA: CLIENTE
 CREATE TABLE cliente (
     cliente_id INT IDENTITY(1,1),
