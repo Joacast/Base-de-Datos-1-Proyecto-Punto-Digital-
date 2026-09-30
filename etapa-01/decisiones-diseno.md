@@ -4,6 +4,7 @@
 **Etapa:** I – Definición del Caso, Alcance y Reglas de Negocio  
 
 ---
+# Etapa 1
 
 ## Tratamiento de Atributos Específicos
 
