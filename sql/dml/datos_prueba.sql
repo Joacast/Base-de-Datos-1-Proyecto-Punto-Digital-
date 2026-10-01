@@ -49,3 +49,35 @@ INSERT INTO producto (nombre, marca, categoria, color, stock, precio_venta) VALU
 ('Auriculares AirPods 3ra Gen', 'Apple', 'Audio', 'Blanco', 12, 210000.00),
 ('Auriculares Galaxy Buds FE', 'Samsung', 'Audio', 'Grafito', 14, 115000.00);
 
+
+-- ----------------------------------------------------------------------------
+-- 4. TABLA: registro_venta (10 registros actualizados con precios Samsung/Apple)
+-- ----------------------------------------------------------------------------
+INSERT INTO registro_venta (cliente_id, producto_id, fecha_compra, cantidad, precio_unitario, monto_total) VALUES
+(1, 1, '2026-08-01 10:15:00', 1, 280000.00, 280000.00), -- Galaxy A15
+(2, 5, '2026-08-02 11:30:00', 1, 45000.00, 45000.00),   -- Funda MagSafe
+(3, 2, '2026-08-05 16:00:00', 1, 1150000.00, 1150000.00), -- Galaxy S24
+(4, 9, '2026-08-08 17:45:00', 1, 210000.00, 210000.00), -- AirPods 3
+(5, 3, '2026-08-10 09:20:00', 1, 890000.00, 890000.00), -- iPhone 13
+(6, 7, '2026-08-12 18:10:00', 1, 28000.00, 28000.00),   -- Cargador Samsung
+(7, 8, '2026-08-15 12:00:00', 1, 39000.00, 39000.00),   -- Cargador Apple
+(8, 6, '2026-08-18 15:30:00', 2, 22000.00, 44000.00),   -- 2 Fundas S24
+(9, 10, '2026-08-20 19:15:00', 1, 115000.00, 115000.00), -- Galaxy Buds FE
+(10, 4, '2026-08-22 10:50:00', 1, 1250000.00, 1250000.00); -- iPhone 15
+
+-- ----------------------------------------------------------------------------
+-- 5. TABLA: registro_compra (10 registros)
+-- (Valores de metodo_pago compatibles con el CHECK: 'Efectivo', 'Tarjeta_Debito', 'Tarjeta_Credito', 'Transferencia')
+-- ----------------------------------------------------------------------------
+INSERT INTO registro_compra (proveedor_id, producto_id, fecha, cantidad, metodo_pago, monto_total) VALUES
+(1, 1, '2026-07-10 08:30:00', 10, 'Transferencia', 2100000.00),
+(1, 2, '2026-07-11 09:15:00', 5, 'Transferencia', 4600000.00),
+(2, 3, '2026-07-12 10:00:00', 8, 'Transferencia', 2080000.00),
+(3, 4, '2026-07-15 11:20:00', 50, 'Transferencia', 250000.00),
+(8, 5, '2026-07-16 14:00:00', 60, 'Efectivo', 132000.00),
+(4, 6, '2026-07-18 15:30:00', 30, 'Transferencia', 540000.00),
+(6, 7, '2026-07-20 16:45:00', 40, 'Transferencia', 300000.00),
+(7, 8, '2026-07-22 09:00:00', 20, 'Transferencia', 640000.00),
+(9, 9, '2026-07-25 11:15:00', 25, 'Efectivo', 225000.00),
+(10, 10, '2026-07-28 17:00:00', 15, 'Transferencia', 525000.00);
+
