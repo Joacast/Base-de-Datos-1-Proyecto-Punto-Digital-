@@ -35,26 +35,3 @@ CREATE TABLE registro_venta (
     CONSTRAINT ck_venta_precio CHECK (precio_unitario > 0),
     CONSTRAINT ck_venta_monto CHECK (monto_total > 0)
 );
-
--- TABLA: REGISTRO_COMPRA
-CREATE TABLE registro_compra (
-    registro_compra_id INT IDENTITY(1,1),
-    proveedor_id INT NOT NULL,
-    producto_id INT NOT NULL,
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    cantidad INT NOT NULL,
-    metodo_pago VARCHAR(30) NOT NULL,
-    monto_total DECIMAL(12, 2) NOT NULL,
-    CONSTRAINT pk_registro_compra PRIMARY KEY (registro_compra_id),
-    CONSTRAINT fk_compra_proveedor FOREIGN KEY (proveedor_id)
-        REFERENCES proveedor (proveedor_id)
-        ON UPDATE CASCADE
-        ON DELETE NO ACTION,
-    CONSTRAINT fk_compra_producto FOREIGN KEY (producto_id)
-        REFERENCES producto (producto_id)
-        ON UPDATE CASCADE
-        ON DELETE NO ACTION,
-    CONSTRAINT ck_compra_cantidad CHECK (cantidad > 0),
-    CONSTRAINT ck_compra_monto CHECK (monto_total > 0),
-    CONSTRAINT ck_compra_metodo CHECK (metodo_pago IN ('Efectivo', 'Tarjeta_Debito', 'Tarjeta_Credito', 'Transferencia'))
-);
