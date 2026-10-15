@@ -1,6 +1,5 @@
 ## 2. Consulta SQL
 
-sql
 -- ============================================================================
 -- ETAPA IV: CONSULTAS Y CASOS DE USO
 -- Punto 3: Consulta de Negocio Avanzada
