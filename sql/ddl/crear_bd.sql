@@ -49,6 +49,8 @@ CREATE TABLE registro_venta (
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(10, 2) NOT NULL, -- Historial de precio congelado
     monto_total DECIMAL(10, 2) NOT NULL,
+    metodo_pago VARCHAR(30) NOT NULL, 
+
     CONSTRAINT pk_registro_venta PRIMARY KEY (registro_venta_id),
     CONSTRAINT fk_venta_cliente FOREIGN KEY (cliente_id)
         REFERENCES cliente (cliente_id)
@@ -60,7 +62,15 @@ CREATE TABLE registro_venta (
         ON DELETE NO ACTION,
     CONSTRAINT ck_venta_cantidad CHECK (cantidad > 0),
     CONSTRAINT ck_venta_precio CHECK (precio_unitario > 0),
-    CONSTRAINT ck_venta_monto CHECK (monto_total > 0)
+    CONSTRAINT ck_venta_monto CHECK (monto_total > 0),
+    CONSTRAINT ck_venta_metodo CHECK (
+        metodo_pago IN (
+            'Efectivo',
+            'Tarjeta_Debito',
+            'Tarjeta_Credito',
+            'Transferencia'
+        )
+    )
 );
 
 -- TABLA: REGISTRO_COMPRA
