@@ -28,8 +28,8 @@ FROM registro_venta rv
 INNER JOIN producto p
     ON rv.producto_id = p.producto_id
 WHERE
-    rv.fecha_compra >= '2026-09-01'
-    AND rv.fecha_compra < '2026-10-01'
+    rv.fecha_compra >= '2026-08-01'
+    AND rv.fecha_compra < '2026-09-01'
 GROUP BY
     p.categoria
 ORDER BY
@@ -70,8 +70,8 @@ De esta manera, cada registro de venta se relaciona con el producto correspondie
 
 ```sql
 WHERE
-    rv.fecha_compra >= '2026-09-01'
-    AND rv.fecha_compra < '2026-10-01'
+    rv.fecha_compra >= '2026-08-01'
+    AND rv.fecha_compra < '2026-09-01'
 ```
 
 La condición permite seleccionar únicamente las ventas realizadas durante septiembre de 2026.
