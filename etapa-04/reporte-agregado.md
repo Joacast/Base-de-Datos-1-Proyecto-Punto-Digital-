@@ -14,7 +14,7 @@ Para obtener estos resultados, se utilizan las tablas `registro_venta` y `produc
 
 La consulta emplea las funciones de agregación `COUNT` y `SUM`, junto con `GROUP BY`, para agrupar y calcular los resultados por categoría.
 
-**Resultado esperado:** obtener un listado de las categorías de productos que registraron ventas durante septiembre de 2026, indicando la cantidad de registros, las unidades vendidas y el importe total recaudado.
+**Resultado esperado:** obtener un listado de las categorías de productos que registraron ventas durante agosto de 2026, indicando la cantidad de registros, las unidades vendidas y el importe total recaudado.
 
 ## 2. Consulta SQL
 
@@ -74,7 +74,7 @@ WHERE
     AND rv.fecha_compra < '2026-09-01'
 ```
 
-La condición permite seleccionar únicamente las ventas realizadas durante septiembre de 2026.
+La condición permite seleccionar únicamente las ventas realizadas durante agosto de 2026.
 
 Se establece una fecha inicial y una fecha límite, evitando incluir ventas realizadas fuera del período indicado.
 
@@ -115,7 +115,7 @@ De esta forma, las categorías que generan mayores ingresos aparecen primero en 
 
 ## 4. Interpretación de los resultados
 
-La consulta devuelve un listado de las categorías que registraron ventas durante septiembre de 2026.
+La consulta devuelve un listado de las categorías que registraron ventas durante agosto de 2026.
 
 Cada fila contiene:
 
