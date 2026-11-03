@@ -1,9 +1,5 @@
 # Etapa V – Implementación técnica: Triggers de Auditoría
 
-**Proyecto:** Punto Digital – Equipo 14  
-**Integrante:** Joaquina Castañeda  
-**Motor de base de datos:** SQL Server
-
 ## 1. Descripción y fundamentos
 
 ### 1.1. ¿Qué es un trigger?
