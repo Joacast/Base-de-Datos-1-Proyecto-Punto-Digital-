@@ -67,3 +67,29 @@ BEGIN
     PRINT 'Venta registrada con éxito. Total a pagar: $' + CAST(@v_monto_total AS VARCHAR(20));
 END;
 GO
+
+-- Demostracion:
+USE punto_digital;
+GO
+
+-- Demostración 1: Ejecución del procedimiento con datos válidos
+EXEC sp_registrar_venta 
+    @p_cliente_id = 1, 
+    @p_producto_id = 2, 
+    @p_cantidad = 3, 
+    @p_metodo_pago = 'Transferencia';
+
+-- Comprobación: consultar el último registro ingresado
+SELECT TOP 1 * 
+FROM registro_venta 
+ORDER BY registro_venta_id DESC;
+GO
+
+-- Demostración 2: Ejecución enviando una cantidad inválida (control de flujo)
+EXEC sp_registrar_venta 
+    @p_cliente_id = 1, 
+    @p_producto_id = 2, 
+    @p_cantidad = 0, 
+    @p_metodo_pago = 'Efectivo';
+GO
+
