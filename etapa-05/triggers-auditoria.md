@@ -1,5 +1,3 @@
-# Etapa V – Implementación técnica: Triggers de Auditoría
-
 ## 1. Descripción y fundamentos
 
 ### 1.1. ¿Qué es un trigger?
