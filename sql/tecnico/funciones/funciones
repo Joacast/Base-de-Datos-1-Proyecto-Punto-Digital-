@@ -1,0 +1,55 @@
+USE punto_digital;
+GO
+
+-- Requerimiento 2: Función escalar para calcular el total a pagar según el medio de pago
+CREATE OR ALTER FUNCTION dbo.fn_calcular_total_con_descuento
+(
+    @p_producto_id INT,
+    @p_cantidad INT,
+    @p_metodo_pago VARCHAR(30)
+)
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+    DECLARE @v_precio_unitario DECIMAL(10,2);
+    DECLARE @v_subtotal DECIMAL(10,2);
+    DECLARE @v_total_final DECIMAL(10,2);
+
+    -- 1. Obtener el precio de venta del producto
+    SELECT @v_precio_unitario = precio_venta
+    FROM producto
+    WHERE producto_id = @p_producto_id;
+
+    -- Si el producto no existe o la cantidad es menor a 1, retorna 0
+    IF @v_precio_unitario IS NULL OR @p_cantidad <= 0
+        RETURN 0;
+
+    -- 2. Calcular subtotal base
+    SET @v_subtotal = @v_precio_unitario * @p_cantidad;
+
+    -- 3. Reglas de negocio de descuento según método de pago
+    IF @p_metodo_pago = 'Efectivo'
+        SET @v_total_final = @v_subtotal * 0.90;      -- 10% de descuento
+    ELSE IF @p_metodo_pago = 'Transferencia'
+        SET @v_total_final = @v_subtotal * 0.95;      -- 5% de descuento
+    ELSE
+        SET @v_total_final = @v_subtotal;             -- Precio normal (Tarjeta / otros)
+
+    RETURN @v_total_final;
+END;
+GO
+
+##Demostracion
+USE punto_digital;
+GO
+
+SELECT 
+    producto_id,
+    nombre,
+    precio_venta,
+    dbo.fn_calcular_total_con_descuento(producto_id, 2, 'Efectivo') AS total_efectivo,
+    dbo.fn_calcular_total_con_descuento(producto_id, 2, 'Transferencia') AS total_transferencia,
+    dbo.fn_calcular_total_con_descuento(producto_id, 2, 'Tarjeta') AS total_tarjeta
+FROM producto
+WHERE producto_id = 1;
+GO
