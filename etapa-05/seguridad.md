@@ -1,0 +1,7 @@
+### Descripción breve del tema técnico y fundamentos de aplicación
+
+- **Tema técnico:** Seguridad: manejo de permisos a nivel de usuarios y roles en SQL Server.
+
+- **Descripción breve:** La seguridad en una base de datos permite controlar qué información puede consultar cada usuario y qué operaciones puede realizar. SQL Server permite asignar permisos directamente a los usuarios o mediante roles que agrupan permisos según sus tareas. Esto ayuda a proteger la información y evitar modificaciones accidentales o no autorizadas.
+
+- **Fundamento de aplicación en Punto Digital:** En nuestro caso de estudio, los usuarios necesitan distintos accesos según las tareas que realizan. Por ejemplo, un usuario encargado de consultar el catálogo puede tener permiso de lectura sobre `producto`, sin poder modificar precios ni stock. Para registrar ventas, se puede autorizar la ejecución de un procedimiento almacenado sin permitir inserciones directas en `registro_venta`. Además, el acceso a los datos personales de `cliente` puede restringirse a quienes lo necesiten. De esta manera, cada usuario cuenta únicamente con los permisos necesarios y los roles facilitan la administración de esos accesos.
