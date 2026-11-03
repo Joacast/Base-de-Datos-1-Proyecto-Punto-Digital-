@@ -39,7 +39,7 @@ BEGIN
 END;
 GO
 
-##Demostracion
+Demostracion:
 USE punto_digital;
 GO
 
