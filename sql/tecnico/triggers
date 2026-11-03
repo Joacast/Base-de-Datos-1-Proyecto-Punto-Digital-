@@ -1,11 +1,3 @@
-/* ============================================================
-   PROYECTO: PUNTO DIGITAL - EQUIPO 14
-   ETAPA V - REQUERIMIENTO 2: SCRIPT DDL TÉCNICO
-   TEMA: TRIGGERS DE AUDITORÍA
-   MOTOR: SQL SERVER
-   INTEGRANTE: Joaquina Castañeda
-   ============================================================ */
-
 USE punto_digital;
 GO
 
