@@ -1,0 +1,28 @@
+BEGIN TRANSACTION;
+
+-- 1. Registrar el encabezado de la venta (cliente, fecha, método de pago)
+INSERT INTO Venta (id_cliente, fecha, metodo_pago, total) 
+VALUES (@id_cliente, GETDATE(), @metodo_pago, @total);
+
+DECLARE @id_venta INT = SCOPE_IDENTITY();
+
+-- 2. Registrar el detalle (producto, cantidad y precio histórico inmutable)
+INSERT INTO Detalle_Venta (id_venta, id_producto, cantidad, precio_unitario)
+VALUES (@id_venta, @id_producto, @cantidad, @precio_historico);
+
+-- 3. Actualizar el inventario
+UPDATE Producto 
+SET stock = stock - @cantidad 
+WHERE id_producto = @id_producto;
+
+-- 4. Validación de la regla de negocio "Gestión y control de stock"
+IF (SELECT stock FROM Producto WHERE id_producto = @id_producto) < 0
+BEGIN
+    ROLLBACK TRANSACTION;
+    PRINT 'Error: La operación generaría stock negativo. Venta cancelada.';
+END
+ELSE
+BEGIN
+    COMMIT TRANSACTION;
+    PRINT 'Venta registrada e inventario actualizado con éxito.';
+END
