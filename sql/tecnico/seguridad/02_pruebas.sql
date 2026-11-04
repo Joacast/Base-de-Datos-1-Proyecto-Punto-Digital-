@@ -87,34 +87,3 @@ BEGIN CATCH
  THROW;
 END CATCH;
 
--- Demostracion adicional: DENY bloquea SELECT heredado; REVOKE retira
--- ese DENY y deja disponible el GRANT del rol. No elimina la membresia.
-BEGIN TRANSACTION;
-BEGIN TRY
- DENY SELECT ON OBJECT::dbo.producto TO seg14_con_rol;
- EXECUTE AS USER='seg14_con_rol';
- SELECT USER_NAME() AS usuario, HAS_PERMS_BY_NAME('dbo.producto','OBJECT','SELECT') AS esperado_0;
- REVERT;
- REVOKE SELECT ON OBJECT::dbo.producto FROM seg14_con_rol;
- EXECUTE AS USER='seg14_con_rol';
- SELECT USER_NAME() AS usuario, HAS_PERMS_BY_NAME('dbo.producto','OBJECT','SELECT') AS esperado_1;
- REVERT;
- ROLLBACK TRANSACTION;
-END TRY
-BEGIN CATCH
- IF USER_NAME()='seg14_con_rol' REVERT;
- IF XACT_STATE()<>0 ROLLBACK TRANSACTION;
- THROW;
-END CATCH;
-
--- Evidencia de permisos y pertenencias (ejecutada como administrador).
-SELECT u.name AS usuario,r.name AS rol
-FROM sys.database_role_members m
-JOIN sys.database_principals u ON u.principal_id=m.member_principal_id
-JOIN sys.database_principals r ON r.principal_id=m.role_principal_id
-WHERE u.name LIKE 'seg14[_]%';
-SELECT u.name AS destinatario,p.state_desc,p.permission_name,
-       OBJECT_SCHEMA_NAME(p.major_id) AS esquema,OBJECT_NAME(p.major_id) AS objeto
-FROM sys.database_permissions p JOIN sys.database_principals u
-ON u.principal_id=p.grantee_principal_id
-WHERE u.name LIKE 'seg14[_]%';
