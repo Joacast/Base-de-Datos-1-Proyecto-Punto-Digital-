@@ -1,0 +1,52 @@
+USE punto_digital;
+GO
+
+-- ============================================================================
+-- ETAPA V - ITEM 4: DEMOSTRACIÓN Y USO DE LOS ÍNDICES IMPLEMENTADOS
+-- ============================================================================
+
+-- DEMOSTRACIÓN A: Verificación física de la existencia de los índices en el motor
+SELECT 
+    t.name AS tabla,
+    i.name AS nombre_indice,
+    i.type_desc AS tipo_indice,
+    i.is_unique AS es_unico
+FROM sys.indexes i
+INNER JOIN sys.tables t ON i.object_id = t.object_id
+WHERE i.name IN ('IX_cliente_provincia', 'IX_registro_venta_fecha_compra')
+ORDER BY t.name;
+GO
+
+
+-- DEMOSTRACIÓN B: Optimización de la Consulta de Clientes VIP (Etapa IV)
+-- El motor aprovecha el índice 'IX_cliente_provincia' para buscar directamente a los 
+-- clientes de 'Corrientes' sin realizar un escaneo completo de toda la tabla (Table Scan).
+SELECT 
+    c.cliente_id, 
+    c.dni_cliente, 
+    c.provincia, 
+    COUNT(rv.registro_venta_id) AS total_registros_venta, 
+    SUM(rv.monto_total) AS monto_total_acumulado
+FROM cliente c WITH (INDEX (IX_cliente_provincia))
+INNER JOIN registro_venta rv ON c.cliente_id = rv.cliente_id
+WHERE c.provincia = 'Corrientes'
+GROUP BY c.cliente_id, c.dni_cliente, c.provincia
+HAVING SUM(rv.monto_total) > 50000.00
+ORDER BY monto_total_acumulado DESC;
+GO
+
+
+-- DEMOSTRACIÓN C: Optimización del Reporte Agregado Mensual (Etapa IV)
+-- El motor utiliza la estructura de árbol (B-Tree) del índice 'IX_registro_venta_fecha_compra' 
+-- para filtrar con alta eficiencia el rango de fechas de agosto de 2026.
+SELECT 
+    p.categoria AS Categoria, 
+    COUNT(rv.registro_venta_id) AS Cantidad_Operaciones, 
+    SUM(rv.cantidad) AS Unidades_Vendidas, 
+    SUM(rv.monto_total) AS Total_Recaudado
+FROM registro_venta rv WITH (INDEX (IX_registro_venta_fecha_compra))
+INNER JOIN producto p ON rv.producto_id = p.producto_id
+WHERE rv.fecha_compra >= '2026-08-01' AND rv.fecha_compra < '2026-09-01'
+GROUP BY p.categoria
+ORDER BY Total_Recaudado DESC;
+GO
