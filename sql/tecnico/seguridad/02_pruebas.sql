@@ -87,3 +87,21 @@ BEGIN CATCH
  THROW;
 END CATCH;
 
+-- Evidencia de permisos y pertenencias (ejecutada como administrador).
+SELECT u.name AS usuario, r.name AS rol
+FROM sys.database_role_members m
+JOIN sys.database_principals u
+    ON u.principal_id = m.member_principal_id
+JOIN sys.database_principals r
+    ON r.principal_id = m.role_principal_id
+WHERE u.name LIKE 'seg14[_]%';
+
+SELECT u.name AS destinatario,
+       p.state_desc,
+       p.permission_name,
+       OBJECT_SCHEMA_NAME(p.major_id) AS esquema,
+       OBJECT_NAME(p.major_id) AS objeto
+FROM sys.database_permissions p
+JOIN sys.database_principals u
+    ON u.principal_id = p.grantee_principal_id
+WHERE u.name LIKE 'seg14[_]%';
