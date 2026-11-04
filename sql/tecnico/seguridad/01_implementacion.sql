@@ -34,11 +34,6 @@ BEGIN TRY
  GRANT SELECT ON OBJECT::dbo.producto TO seg14_lector;
  GRANT SELECT ON OBJECT::dbo.producto TO seg14_rol_consulta;
  ALTER ROLE seg14_rol_consulta ADD MEMBER seg14_con_rol;
- -- DENY explicito para ilustrar la prohibicion de escritura directa.
- DENY INSERT, UPDATE, DELETE ON OBJECT::dbo.registro_venta TO seg14_lector;
- DENY INSERT, UPDATE, DELETE ON OBJECT::dbo.producto TO seg14_lector;
- DENY INSERT, UPDATE, DELETE ON OBJECT::dbo.registro_venta TO seg14_rol_ventas;
- DENY INSERT, UPDATE, DELETE ON OBJECT::dbo.producto TO seg14_rol_ventas;
  EXEC(N'CREATE PROCEDURE dbo.usp_seg14_registrar_venta
  @cliente_id INT,
  @producto_id INT,
