@@ -9,9 +9,10 @@ CREATE OR ALTER PROCEDURE sp_registrar_venta_transaccional
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
     -- Validar cantidad mínima
-    IF @p_cantidad <= 0
+    IF @p_cantidad IS NULL OR @p_cantidad <= 0
     BEGIN
         PRINT 'Error: La cantidad de productos debe ser mayor a 0.';
         RETURN;
@@ -34,54 +35,58 @@ BEGIN
     -- Declarar variables para cálculos
     DECLARE @v_precio_unitario DECIMAL(10,2);
     DECLARE @v_monto_total DECIMAL(10,2);
-    DECLARE @v_stock_actual INT;
 
-    SELECT 
-        @v_precio_unitario = precio_venta,
-        @v_stock_actual = stock
-    FROM producto 
-    WHERE producto_id = @p_producto_id;
+    BEGIN TRY
+        -- Iniciar la transacción
+        BEGIN TRANSACTION;
 
-    -- Iniciar la transacción
-    BEGIN TRANSACTION;
+        -- Descontar únicamente si hay stock suficiente.
+        UPDATE producto
+        SET stock = stock - @p_cantidad
+        WHERE producto_id = @p_producto_id AND stock >= @p_cantidad;
 
-    -- 1. Actualizar el inventario restando la cantidad vendida
-    UPDATE producto
-    SET stock = stock - @p_cantidad
-    WHERE producto_id = @p_producto_id;
+        IF @@ROWCOUNT = 0
+        BEGIN
+            ROLLBACK TRANSACTION;
+            PRINT 'Error: Stock insuficiente. La venta fue cancelada.';
+            RETURN;
+        END
 
-    -- 2. Validación de regla de negocio: Control de stock no negativo
-    IF (SELECT stock FROM producto WHERE producto_id = @p_producto_id) < 0
-    BEGIN
-        ROLLBACK TRANSACTION;
-        PRINT 'Error: Stock insuficiente. La venta fue cancelada.';
-        RETURN;
-    END
+        SELECT @v_precio_unitario = precio_venta
+        FROM producto
+        WHERE producto_id = @p_producto_id;
 
-    -- 3. Calcular monto total
-    SET @v_monto_total = @v_precio_unitario * @p_cantidad;
+        -- 3. Calcular monto total
+        SET @v_monto_total = @v_precio_unitario * @p_cantidad;
 
-    -- 4. Registrar la venta en la tabla real
-    INSERT INTO registro_venta (
-        cliente_id, 
-        producto_id, 
-        fecha_compra, 
-        cantidad, 
-        precio_unitario, 
-        monto_total, 
-        metodo_pago
-    )
-    VALUES (
-        @p_cliente_id, 
-        @p_producto_id, 
-        GETDATE(), 
-        @p_cantidad, 
-        @v_precio_unitario, 
-        @v_monto_total, 
-        @p_metodo_pago
-    );
+        -- 4. Registrar la venta en la tabla real
+        INSERT INTO registro_venta (
+            cliente_id,
+            producto_id,
+            fecha_compra,
+            cantidad,
+            precio_unitario,
+            monto_total,
+            metodo_pago
+        )
+        VALUES (
+            @p_cliente_id,
+            @p_producto_id,
+            GETDATE(),
+            @p_cantidad,
+            @v_precio_unitario,
+            @v_monto_total,
+            @p_metodo_pago
+        );
 
-    -- Confirmar los cambios si todo salió bien
-    COMMIT TRANSACTION;
-    PRINT 'Venta registrada e inventario actualizado con éxito.';
+        -- Confirmar los cambios si todo salió bien
+        COMMIT TRANSACTION;
+        PRINT 'Venta registrada e inventario actualizado con éxito.';
+    END TRY
+    BEGIN CATCH
+        -- Ante un error, deshacer tanto el descuento como el registro de venta.
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
 END;

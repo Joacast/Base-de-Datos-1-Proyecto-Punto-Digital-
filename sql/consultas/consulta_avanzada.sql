@@ -1,4 +1,4 @@
-## 2. Consulta SQL
+-- 2. Consulta SQL
 
 -- ============================================================================
 -- ETAPA IV: CONSULTAS Y CASOS DE USO

@@ -1,4 +1,5 @@
-# Procedimientos 
+-- Procedimientos
+-- Ejecutar primero sql/tecnico/transacciones/transacciones.
 USE punto_digital;
 GO
 
@@ -12,59 +13,12 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Variables para almacenar los valores calculados
-    DECLARE @v_precio_unitario DECIMAL(10,2);
-    DECLARE @v_monto_total DECIMAL(10,2);
-
-    -- 1. Validar que la cantidad ingresada sea válida
-    IF @p_cantidad <= 0
-    BEGIN
-        PRINT 'Error: La cantidad de productos debe ser mayor a 0.';
-        RETURN;
-    END
-
-    -- 2. Validar existencia del cliente
-    IF NOT EXISTS (SELECT 1 FROM cliente WHERE cliente_id = @p_cliente_id)
-    BEGIN
-        PRINT 'Error: El cliente ingresado no existe.';
-        RETURN;
-    END
-
-    -- 3. Buscar el precio del producto y validar su existencia
-    SELECT @v_precio_unitario = precio_venta
-    FROM producto
-    WHERE producto_id = @p_producto_id;
-
-    IF @v_precio_unitario IS NULL
-    BEGIN
-        PRINT 'Error: El producto especificado no existe.';
-        RETURN;
-    END
-
-    -- 4. Calcular el importe total
-    SET @v_monto_total = @p_cantidad * @v_precio_unitario;
-
-    -- 5. Insertar el registro en la tabla de ventas
-    INSERT INTO registro_venta (
-        cliente_id,
-        producto_id,
-        fecha_compra,
-        cantidad,
-        precio_unitario,
-        monto_total,
-        metodo_pago
-    )
-    VALUES (
-        @p_cliente_id,
-        @p_producto_id,
-        GETDATE(),
-        @p_cantidad,
-        @v_precio_unitario,
-        @v_monto_total,
-        @p_metodo_pago
-    );
-
-    PRINT 'Venta registrada con éxito. Total a pagar: $' + CAST(@v_monto_total AS VARCHAR(20));
+    -- Reutilizar la transacción para registrar la venta y descontar stock juntos.
+    EXEC dbo.sp_registrar_venta_transaccional
+        @p_cliente_id = @p_cliente_id,
+        @p_producto_id = @p_producto_id,
+        @p_cantidad = @p_cantidad,
+        @p_metodo_pago = @p_metodo_pago;
 END;
 GO
 
