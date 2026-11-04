@@ -1,6 +1,6 @@
 Tema técnico: Índices y Optimización de Consultas en SQL Server
 
-Descripción breve del tema técnico y fundamentos de aplicación Descripción breve:
+Descripción breve del tema técnico y fundamentos de aplicación:
 Los índices en un motor de base de datos relacional como SQL Server son estructuras que mejoran la velocidad de recuperación de datos sin alterar el orden físico de las tablas. Al crear índices non-clustered (no agrupados) sobre las columnas que con mayor frecuencia se utilizan en las cláusulas WHERE, JOIN, GROUP BY o ORDER BY, el motor evita realizar escaneos completos de tablas (Table Scan), reduciendo drásticamente el uso de recursos de entrada/salida (I/O) y el tiempo de respuesta en las consultas.
 
 Fundamento de aplicación en Punto Digital:
