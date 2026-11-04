@@ -63,14 +63,15 @@ Comprende el análisis inicial de la tienda, la delimitación del alcance, el re
 | `decisiones-diseno.md` | Justificación técnica de atributos atómicos, herencia de personas e inmutabilidad. |
 
 ### Etapa 02 — Modelado conceptual y lógico
-Comprende la representación gráfica conceptual mediante DER y su correspondiente mapeo al modelo relacional normalizado.
+
+Comprende la representación del caso de estudio mediante un Diagrama Entidad-Relación (DER), el modelo relacional y la documentación de las decisiones de diseño y del proceso de normalización.
 
 | Documento | Descripción |
 | :--- | :--- |
-| `der/` | Diagrama Entidad-Relación (DER) conceptual con jerarquía de especialización PERSONA. |
-| `modelo-relacional.md` | Esquema relacional detallado con definición de tablas, PK compuestas y FKs. |
-| `normalizacion.md` | Aplicación y justificación del proceso de normalización (1FN, 2FN y 3FN), eliminación de redundancias y dependencias funcionales. |
-| `decisiones-diseno.md` | Registro de normalización (1FN, 2FN, 3FN), claves surrogadas y resolución de jerarquías. |
+| `der/DER.jpeg` | Diagrama Entidad-Relación del caso de estudio, con sus entidades, atributos y relaciones. |
+| `Modelo_Relacional.png` | Representación gráfica del modelo relacional, con sus tablas, claves y relaciones. |
+| `normalizacion.md` | Desarrollo del proceso de normalización: primera, segunda y tercera forma normal. |
+| `decisiones-diseno.md` | Decisiones documentadas sobre mapeo de PERSONA, relaciones N:M, claves simples y compuestas, normalización y manejo de datos. |
 
 ### Etapa 03 — Implementación física
 Esta etapa comprende la definición de la estructura física de la base de datos, el establecimiento de restricciones de integridad y la validación de los datos mediante pruebas de consistencia.
