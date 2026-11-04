@@ -13,6 +13,7 @@ DECLARE @ProductoId INT = SCOPE_IDENTITY();
 PRINT '--- 1. ESTADO INICIAL DE PRODUCTOS ---';
 SELECT producto_id, nombre, stock, precio_venta FROM dbo.producto WHERE producto_id = @ProductoId;
 
+
 -- ============================================================
 -- 2. EJECUCIÓN DE CAMBIOS (Actualizaciones para disparar el trigger)
 -- ============================================================
@@ -35,7 +36,7 @@ WHERE producto_id = @ProductoId;
 
 
 -- ============================================================
--- 3. VERIFICACIÓN DE RESULTADOS
+-- 3. VERIFICACIÓN DE RESULTADOS EN VIVO
 -- ============================================================
 PRINT '--- 2. ESTADO FINAL DE LA TABLA PRODUCTO ---';
 SELECT producto_id, nombre, color, stock, precio_venta 
@@ -56,45 +57,30 @@ FROM dbo.auditoria_producto
 WHERE producto_id = @ProductoId;
 GO
 
+
 /* ============================================================
-   RESULTADOS ESPERADOS (DEMOSTRACIÓN)
-   ============================================================ */
+   SECCIÓN DE DOCUMENTACIÓN: RESULTADOS ESPERADOS (EJEMPLO)
+   (Nota: Esta sección es informativa y está comentada para evitar 
+   errores de variables locales al ejecutar todo el script de corrido)
+   ============================================================
 
--- 1. Estado inicial de la tabla `producto`
--- ------------------------------------------------------------
-SELECT '1. Estado Inicial' AS fase, producto_id, nombre, stock, precio_venta 
-FROM dbo.producto 
-WHERE producto_id = @ProductoId;
-/*
-Resultado esperado en consola:
-producto_id | nombre                | stock | precio_venta
-------------+-----------------------+-------+-------------
-1           | Auriculares Bluetooth | 50    | 15000.00
-*/
+   -- 1. Estado inicial que tenía el producto:
+   ------------------------------------------------------------
+   producto_id | nombre                | stock | precio_venta
+   ------------+-----------------------+-------+-------------
+   1           | Auriculares Bluetooth | 50    | 15000.00
 
+   -- 2. Estado final de la tabla `producto` (después de los 3 cambios):
+   ------------------------------------------------------------
+   producto_id | nombre                | color | stock | precio_venta
+   ------------+-----------------------+-------+-------+-------------
+   1           | Auriculares Bluetooth | Azul  | 40    | 16500.00
 
--- 2. Estado final de la tabla `producto` (después de los 3 cambios)
--- ------------------------------------------------------------
-SELECT '2. Estado Final' AS fase, producto_id, nombre, color, stock, precio_venta 
-FROM dbo.producto 
-WHERE producto_id = @ProductoId;
-/*
-Resultado esperado en consola:
-producto_id | nombre                | color | stock | precio_venta
-------------+-----------------------+-------+-------+-------------
-1           | Auriculares Bluetooth | Azul  | 40    | 16500.00
-*/
-
-
--- 3. Historial registrado en la tabla `auditoria_producto`
--- ------------------------------------------------------------
-SELECT '3. Historial Auditoría' AS fase, auditoria_id, producto_id, stock_anterior, stock_nuevo, precio_anterior, precio_nuevo, fecha_cambio, usuario_sql 
-FROM dbo.auditoria_producto 
-WHERE producto_id = @ProductoId;
-/*
-Resultado esperado en consola (Nota: El cambio 3 del color NO genera registro):
-auditoria_id | producto_id | stock_anterior | stock_nuevo | precio_anterior | precio_nuevo | fecha_cambio            | usuario_sql
--------------+-------------+----------------+-------------+-----------------+--------------+-------------------------+------------
-1            | 1           | 50             | 45          | 15000.00        | 16500.00     | 2026-11-04 14:12:00.123 | dbo
-2            | 1           | 45             | 40          | 16500.00        | 16500.00     | 2026-11-04 14:12:00.125 | dbo
-*/
+   -- 3. Historial registrado en la tabla `auditoria_producto`:
+   -- (Nota: El cambio 3 del color NO genera registro porque no modificó stock ni precio)
+   ------------------------------------------------------------
+   auditoria_id | producto_id | stock_anterior | stock_nuevo | precio_anterior | precio_nuevo | fecha_cambio            | usuario_sql
+   -------------+-------------+----------------+-------------+-----------------+--------------+-------------------------+------------
+   1            | 1           | 50             | 45          | 15000.00        | 16500.00     | 2026-11-04 14:12:00.123 | dbo
+   2            | 1           | 45             | 40          | 16500.00        | 16500.00     | 2026-11-04 14:12:00.125 | dbo
+============================================================
