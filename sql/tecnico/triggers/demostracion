@@ -1,0 +1,100 @@
+USE punto_digital;
+GO
+
+-- ============================================================
+-- 1. PREPARACIÓN: Insertar un producto inicial de prueba
+-- ============================================================
+INSERT INTO dbo.producto (nombre, marca, categoria, color, stock, precio_venta)
+VALUES ('Auriculares Bluetooth', 'Sony', 'Audio', 'Negro', 50, 15000.00);
+
+-- Guardamos el ID insertado
+DECLARE @ProductoId INT = SCOPE_IDENTITY();
+
+PRINT '--- 1. ESTADO INICIAL DE PRODUCTOS ---';
+SELECT producto_id, nombre, stock, precio_venta FROM dbo.producto WHERE producto_id = @ProductoId;
+
+-- ============================================================
+-- 2. EJECUCIÓN DE CAMBIOS (Actualizaciones para disparar el trigger)
+-- ============================================================
+
+-- Cambio 1: Modificación de Stock y Precio
+UPDATE dbo.producto
+SET stock = 45,
+    precio_venta = 16500.00
+WHERE producto_id = @ProductoId;
+
+-- Cambio 2: Modificación únicamente de Stock
+UPDATE dbo.producto
+SET stock = 40
+WHERE producto_id = @ProductoId;
+
+-- Cambio 3: Modificación sin alterar precio ni stock (NO debe auditarse)
+UPDATE dbo.producto
+SET color = 'Azul'
+WHERE producto_id = @ProductoId;
+
+
+-- ============================================================
+-- 3. VERIFICACIÓN DE RESULTADOS
+-- ============================================================
+PRINT '--- 2. ESTADO FINAL DE LA TABLA PRODUCTO ---';
+SELECT producto_id, nombre, color, stock, precio_venta 
+FROM dbo.producto 
+WHERE producto_id = @ProductoId;
+
+PRINT '--- 3. HISTORIAL REGISTRADO EN AUDITORIA_PRODUCTO ---';
+SELECT 
+    auditoria_id,
+    producto_id,
+    stock_anterior,
+    stock_nuevo,
+    precio_anterior,
+    precio_nuevo,
+    fecha_cambio,
+    usuario_sql
+FROM dbo.auditoria_producto
+WHERE producto_id = @ProductoId;
+GO
+
+/* ============================================================
+   RESULTADOS ESPERADOS (DEMOSTRACIÓN)
+   ============================================================ */
+
+-- 1. Estado inicial de la tabla `producto`
+-- ------------------------------------------------------------
+SELECT '1. Estado Inicial' AS fase, producto_id, nombre, stock, precio_venta 
+FROM dbo.producto 
+WHERE producto_id = @ProductoId;
+/*
+Resultado esperado en consola:
+producto_id | nombre                | stock | precio_venta
+------------+-----------------------+-------+-------------
+1           | Auriculares Bluetooth | 50    | 15000.00
+*/
+
+
+-- 2. Estado final de la tabla `producto` (después de los 3 cambios)
+-- ------------------------------------------------------------
+SELECT '2. Estado Final' AS fase, producto_id, nombre, color, stock, precio_venta 
+FROM dbo.producto 
+WHERE producto_id = @ProductoId;
+/*
+Resultado esperado en consola:
+producto_id | nombre                | color | stock | precio_venta
+------------+-----------------------+-------+-------+-------------
+1           | Auriculares Bluetooth | Azul  | 40    | 16500.00
+*/
+
+
+-- 3. Historial registrado en la tabla `auditoria_producto`
+-- ------------------------------------------------------------
+SELECT '3. Historial Auditoría' AS fase, auditoria_id, producto_id, stock_anterior, stock_nuevo, precio_anterior, precio_nuevo, fecha_cambio, usuario_sql 
+FROM dbo.auditoria_producto 
+WHERE producto_id = @ProductoId;
+/*
+Resultado esperado en consola (Nota: El cambio 3 del color NO genera registro):
+auditoria_id | producto_id | stock_anterior | stock_nuevo | precio_anterior | precio_nuevo | fecha_cambio            | usuario_sql
+-------------+-------------+----------------+-------------+-----------------+--------------+-------------------------+------------
+1            | 1           | 50             | 45          | 15000.00        | 16500.00     | 2026-11-04 14:12:00.123 | dbo
+2            | 1           | 45             | 40          | 16500.00        | 16500.00     | 2026-11-04 14:12:00.125 | dbo
+*/
