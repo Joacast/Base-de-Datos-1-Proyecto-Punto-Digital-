@@ -69,7 +69,7 @@ Comprende la representación del caso de estudio mediante un Diagrama Entidad-Re
 | Documento | Descripción |
 | :--- | :--- |
 | `der/DER.png` | Diagrama Entidad-Relación del caso de estudio, con sus entidades, atributos y relaciones. |
-| `modelo-relacional.png` | Representación gráfica del modelo relacional con Persona, Cliente y Proveedor; pendiente de ajustar sus campos al DDL actual. |
+| `modelo-relacional.png` | Representación gráfica del modelo relacional con Persona, Cliente y Proveedor. |
 | `normalizacion.md` | Desarrollo del proceso de normalización: primera, segunda y tercera forma normal. |
 | `decisiones-diseno.md` | Decisiones sobre Persona, sus relaciones con Cliente y Proveedor, claves y normalización. |
 
