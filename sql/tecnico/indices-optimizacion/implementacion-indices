@@ -1,0 +1,32 @@
+USE punto_digital;
+GO
+
+-- ============================================================================
+-- ETAPA V - ITEM 4: ÍNDICES (CREACIÓN DE LA ESTRUCTURA DE OPTIMIZACIÓN)
+-- ============================================================================
+
+-- 1. ÍNDICE PARA CLIENTES (Optimiza el filtrado por provincia)
+-- Creación de un índice no agrupado sobre la columna 'provincia' de la tabla 'cliente'.
+-- Se utiliza la cláusula INCLUDE para agregar columnas consultadas frecuentemente (Covering Index),
+-- evitando accesos innecesarios a la tabla base (Bookmark Lookups).
+IF EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_cliente_provincia' AND object_id = OBJECT_ID('cliente'))
+    DROP INDEX IX_cliente_provincia ON cliente;
+GO
+
+CREATE NONCLUSTERED INDEX IX_cliente_provincia
+ON cliente (provincia)
+INCLUDE (dni_cliente, numero_telefono);
+GO
+
+
+-- 2. ÍNDICE PARA VENTAS (Optimiza la búsqueda y rangos por fecha)
+-- Creación de un índice no agrupado sobre la columna 'fecha_compra' de la tabla 'registro_venta'.
+-- Permite agilizar reportes mensuales y análisis por períodos sin recorrer toda la tabla.
+IF EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_registro_venta_fecha_compra' AND object_id = OBJECT_ID('registro_venta'))
+    DROP INDEX IX_registro_venta_fecha_compra ON registro_venta;
+GO
+
+CREATE NONCLUSTERED INDEX IX_registro_venta_fecha_compra
+ON registro_venta (fecha_compra)
+INCLUDE (cliente_id, producto_id, cantidad, monto_total);
+GO
