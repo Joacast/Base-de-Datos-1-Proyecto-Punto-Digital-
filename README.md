@@ -40,17 +40,17 @@ El funcionamiento de Punto Digital se rige bajo un conjunto formal de reglas de 
 * **Categorización jerárquica :** Cada producto pertenece estrictamente a una única categoría, mientras que una categoría puede agrupar múltiples productos.
 * **Historial e inmutabilidad de precios :** El precio unitario registrado en el detalle de una transacción debe conservarse de forma independiente a las variaciones del precio actual de lista del producto, impidiendo modificaciones retroactivas.
 * **Normalización de métodos de pago :** Toda operación de cobro debe registrarse mediante un método de pago tipificado y habilitado (Efectivo, Débito, Crédito, Transferencia), pudiendo reutilizarse en múltiples transacciones.
-* **Integridad de transacciones y detalle :** Cada compra/venta posee un identificador único, fecha, cliente asociado y monto total. Debe contener de manera obligatoria al menos un producto desglosado en su respectiva línea de detalle.
+- **Integridad de compras y ventas:** Cada registro de venta relaciona un cliente con un producto e incluye fecha, cantidad, precio unitario, monto total y método de pago. Cada registro de compra relaciona un proveedor con un producto e incluye fecha, cantidad, monto total y método de pago. Las claves foráneas y las restricciones de integridad controlan la validez de estas relaciones y de los valores registrados.
 * **Relación con proveedores :** Un proveedor puede suministrar múltiples productos y un producto puede ser provisto por uno o varios proveedores (cardinalidad N:M).
 
 La definición y justificación técnica completa se encuentra en:
-`docs/etapa-01/reglas-negocio.md`
+``etapa-01/reglas-negocio.md`
 
 ---
 
-## DOCUMETACIÓN
+## DOCUMENTACIÓN
 
-La documentación del proyecto se encuentra organizada dentro del repositorio en el directorio `docs/`, dividida de acuerdo con las fases de desarrollo:
+La documentación del proyecto se encuentra organizada en las carpetas `etapa-01/`, `etapa-02/`, `etapa-03/`, `etapa-04/` y `etapa-05/`, ubicadas en la raíz del repositorio y divididas según las fases de desarrollo.
 
 ### Etapa 01 — Requerimientos y dominio del negocio
 Comprende el análisis inicial de la tienda, la delimitación del alcance, el relevamiento de la problemática y las reglas de negocio base.
@@ -94,11 +94,29 @@ Esta etapa corresponde a la explotación de los datos mediante consultas SQL com
 
 ---
 
+### Etapa 05 — Temas técnicos
+
+Esta etapa comprende el desarrollo de temas técnicos de SQL Server aplicados al sistema Punto Digital: procedimientos y funciones almacenadas, manejo de transacciones, triggers de auditoría, seguridad y optimización de consultas. Incluye la descripción y los fundamentos de aplicación de cada tema, los scripts SQL correspondientes y la documentación de su demostración.
+
+| Documento | Descripción |
+| :--- | :--- |
+| `procedimientos-funciones.md` | Descripción de procedimientos y funciones almacenadas y sus fundamentos de aplicación al sistema de ventas. |
+| `manejo-transiciones.md` | Descripción del manejo de transacciones para mantener la consistencia de las operaciones. |
+| `triggers-auditoria.md` | Fundamentos de utilización de triggers para registrar cambios y facilitar la auditoría de los datos. |
+| `seguridad.md` | Administración de usuarios, roles y permisos para controlar el acceso a la información y las operaciones autorizadas. |
+| `indices-optimizacion.md` | Fundamentos de utilización de índices para mejorar el rendimiento de las consultas. |
+
+La documentación de esta etapa se encuentra en el directorio [`etapa-05/`](etapa-05/).
+
+---
+
 ### Scripts SQL — Directorio `/sql`
-Contiene la totalidad de los scripts organizados por propósito operativo y listos para su ejecución secuencial en el gestor de base de datos.
+
+Contiene los scripts organizados según su propósito. Para ejecutarlos, se deben respetar las dependencias y las instrucciones indicadas en cada archivo, seleccionando la base de datos correspondiente.
 
 | Directorio | Descripción |
 | :--- | :--- |
-| `sql/ddl/` | Scripts de Definición de Datos (Data Definition Language) para la creación de tablas, claves, índices y restricciones. |
-| `sql/dml/` | Scripts de Manipulación de Datos (Data Manipulation Language) para el poblado masivo y consistente de datos de prueba. |
-| `sql/consultas/` | Scripts con las consultas analíticas, reportes periódicos y generación de comprobantes de venta. |
+| `sql/ddl/` | Scripts de Definición de Datos (Data Definition Language) para la creación de tablas, claves y restricciones. |
+| `sql/dml/` | Scripts de Manipulación de Datos (Data Manipulation Language) para la carga de datos de prueba. |
+| `sql/consultas/` | Scripts con consultas analíticas, reportes y generación de comprobantes de venta. |
+| `sql/tecnico/` | Scripts de los temas técnicos de la Etapa 05: procedimientos, funciones, transacciones, triggers, seguridad e índices para la optimización de consultas. |
