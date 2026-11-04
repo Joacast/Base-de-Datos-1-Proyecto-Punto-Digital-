@@ -13,24 +13,25 @@ SELECT
     i.is_unique AS es_unico
 FROM sys.indexes i
 INNER JOIN sys.tables t ON i.object_id = t.object_id
-WHERE i.name IN ('IX_cliente_provincia', 'IX_registro_venta_fecha_compra')
+WHERE i.name IN ('IX_persona_provincia', 'IX_registro_venta_fecha_compra')
 ORDER BY t.name;
 GO
 
 
 -- DEMOSTRACIÓN B: Optimización de la Consulta de Clientes VIP (Etapa IV)
--- El motor aprovecha el índice 'IX_cliente_provincia' para buscar directamente a los 
+-- El motor aprovecha el índice 'IX_persona_provincia' para buscar directamente a los
 -- clientes de 'Corrientes' sin realizar un escaneo completo de toda la tabla (Table Scan).
 SELECT 
     c.cliente_id, 
     c.dni_cliente, 
-    c.provincia, 
+    pe.provincia,
     COUNT(rv.registro_venta_id) AS total_registros_venta, 
     SUM(rv.monto_total) AS monto_total_acumulado
-FROM cliente c WITH (INDEX (IX_cliente_provincia))
+FROM persona pe WITH (INDEX (IX_persona_provincia))
+INNER JOIN cliente c ON c.persona_id = pe.persona_id
 INNER JOIN registro_venta rv ON c.cliente_id = rv.cliente_id
-WHERE c.provincia = 'Corrientes'
-GROUP BY c.cliente_id, c.dni_cliente, c.provincia
+WHERE pe.provincia = 'Corrientes'
+GROUP BY c.cliente_id, c.dni_cliente, pe.provincia
 HAVING SUM(rv.monto_total) > 50000.00
 ORDER BY monto_total_acumulado DESC;
 GO

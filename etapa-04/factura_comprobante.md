@@ -10,7 +10,7 @@ El objetivo es obtener los datos de la venta y del cliente junto con el producto
 
 Esta consulta facilita la emisión de comprobantes impresos o digitales, garantizando transparencia en el desglose de precios y cantidades para el cliente y optimizando el control administrativo de las operaciones comerciales.
 
-Para consolidar la información, se relacionan la tabla principal `registro_venta` con las tablas `cliente` y `producto` mediante sus respectivos identificadores (`cliente_id` y `producto_id`).
+Para consolidar la información, se relacionan la tabla principal `registro_venta` con las tablas `cliente`, `persona` y `producto` mediante sus respectivos identificadores (`cliente_id` y `producto_id`).
 
 **Resultado esperado:** Obtener el detalle completo de la venta indicada (por ejemplo, `registro_venta_id = 1`), mostrando datos del comprobante, información del cliente, especificación del producto, cantidad e importe del registro.
 
@@ -29,8 +29,8 @@ SELECT
     v.registro_venta_id                                       AS nro_comprobante,
     v.fecha_compra                                            AS fecha_emision,
     c.dni_cliente                                             AS dni_cliente,
-    c.numero_telefono                                         AS telefono,
-    CONCAT_WS(', ', c.calle, c.localidad, c.provincia)        AS domicilio,
+    pe.numero_telefono                                         AS telefono,
+    CONCAT_WS(', ', pe.calle, pe.localidad, pe.provincia)        AS domicilio,
     v.metodo_pago                                             AS forma_pago,
     
     -- DETALLE / RENGLÓN
@@ -50,6 +50,7 @@ SELECT
 
 FROM registro_venta v
 INNER JOIN cliente c  ON v.cliente_id  = c.cliente_id
+INNER JOIN persona pe ON c.persona_id = pe.persona_id
 INNER JOIN producto p ON v.producto_id = p.producto_id
 WHERE v.registro_venta_id = 1; -- Cambiar por el ID de comprobante deseado
 ```
@@ -64,8 +65,8 @@ Se seleccionan y estructuran los campos que componen la factura o comprobante de
 - `v.registro_venta_id`: identificador único de la transacción que actúa como número de comprobante.
 - `v.fecha_compra`: fecha en la que se realizó la operación.
 - `c.dni_cliente`: documento de identidad del comprador.
-- `c.numero_telefono`: teléfono de contacto del cliente.
-- `CONCAT_WS(', ', c.calle, c.localidad, c.provincia)`: concatena los campos de dirección de la tabla cliente en una sola cadena formateada, omitiendo valores nulos automáticamente para evitar resultados no deseados.
+- `pe.numero_telefono`: teléfono de contacto del cliente.
+- `CONCAT_WS(', ', pe.calle, pe.localidad, pe.provincia)`: concatena los campos de dirección de la tabla persona en una sola cadena formateada, omitiendo valores nulos automáticamente para evitar resultados no deseados.
 - `v.metodo_pago`: forma de pago utilizada en la transacción (efectivo, tarjeta, transferencia, etc.).
 
 #### Detalle de producto
@@ -80,13 +81,15 @@ Se seleccionan y estructuran los campos que componen la factura o comprobante de
 ```sql
 FROM registro_venta v
 INNER JOIN cliente c  ON v.cliente_id  = c.cliente_id
+INNER JOIN persona pe ON c.persona_id = pe.persona_id
 INNER JOIN producto p ON v.producto_id = p.producto_id
 ```
 
-Se vinculan tres tablas esenciales del modelo de datos:
+Se vinculan cuatro tablas esenciales del modelo de datos:
 
 - `registro_venta`: actúa como tabla central de la consulta, conteniendo los datos de la transacción, las cantidades y los precios aplicados.
-- `cliente`: se une mediante `cliente_id` para incorporar la información personal y de localización del comprador.
+- `cliente`: se une mediante `cliente_id` para obtener el DNI del comprador.
+- `persona`: se une mediante persona_id para obtener domicilio y teléfono.
 - `producto`: se une mediante `producto_id` para recuperar las características descriptivas del artículo vendido.
 
 ### 3.3. Cálculos y Funciones de Ventana

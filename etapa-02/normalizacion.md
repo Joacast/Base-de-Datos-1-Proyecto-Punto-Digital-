@@ -164,27 +164,31 @@ El objetivo de la 3FN es eliminar este tipo de dependencias para reducir la redu
 ---
 
 ### 2. Aplicación de 3FN al modelo
+
+En el código actual, Persona centraliza teléfono y domicilio. Cliente y Proveedor conservan claves propias y se relacionan con persona_id obligatorio y único en cada tabla. Los ejemplos anteriores con cabecera y detalle corresponden a otra estructura y quedan pendientes de revisión; no son tablas del DDL actual.
 A partir del modelo relacional propuesto, se revisan las dependencias funcionales de cada relación. Los atributos no clave deben depender de manera directa y no transitiva de la clave primaria de su tabla:
 
 | Relación | Dependencia funcional principal | Evaluación en 3FN |
 | :--- | :--- | :--- |
 | **Producto** | `id_Producto` $\rightarrow$ `marca, categoría, color, stock` | **Cumple 3FN:** Los atributos dependen directamente de `id_Producto` y no se observa ninguna dependencia transitiva. |
-| **Cliente** | `id_Cliente` $\rightarrow$ `DNI_Cliente, numero_Telefono, calle, localidad, provincia` | **Cumple 3FN:** Los datos propios del cliente dependen directamente de su identificador (`id_Cliente`). |
-| **Proveedor** | `id_Proveedor` $\rightarrow$ `CUIT, calle, localidad, provincia` | **Cumple 3FN:** Los datos propios del proveedor dependen directamente de su identificador (`id_Proveedor`). |
-| **Registro_Venta** | `id_Registro_Venta` $\rightarrow$ `id_Cliente, id_Producto, fecha_Compra, cantidad` | **Cumple 3FN:** Los datos de cada venta dependen directamente de la clave del registro. |
+| **Persona** | `persona_id` → `numero_telefono, calle, localidad, provincia` | Centraliza los datos de contacto. |
+| **Cliente** | `cliente_id` → `persona_id, dni_cliente` | Mantiene los datos propios del rol y referencia a Persona. |
+| **Proveedor** | `proveedor_id` → `persona_id, cuit, razon_social` | Mantiene los datos propios del rol y referencia a Persona. |
+| **Registro_Venta** | `registro_venta_id` → `cliente_id, producto_id, fecha_compra, cantidad, precio_unitario, monto_total, metodo_pago` | Conserva el precio histórico y el total calculado; este último introduce redundancia. |
 | **Registro_Compra** | `id_Registro_Compra` $\rightarrow$ `id_Proveedor, id_Producto, fecha, método_Pago, monto_Total` | **Cumple 3FN:** Los datos de cada compra al proveedor dependen de la clave del registro. |
 
 ---
 
-### 3. Esquema resultante en 3FN
+### 3. Esquema implementado con Persona
 
-* **PRODUCTO** (`id_Producto` **PK**, marca, categoría, color, stock)
-* **CLIENTE** (`id_Cliente` **PK**, DNI_Cliente **U**, numero_Telefono, calle, localidad, provincia)
-* **PROVEEDOR** (`id_Proveedor` **PK**, CUIT **U**, calle, localidad, provincia)
-* **REGISTRO_VENTA** (`id_Registro_Venta` **PK**, `id_Cliente` **FK**, `id_Producto` **FK**, fecha_Compra, cantidad)
-* **REGISTRO_COMPRA** (`id_Registro_Compra` **PK**, `id_Proveedor` **FK**, `id_Producto` **FK**, fecha, método_Pago, monto_Total)
+* **PRODUCTO** (`producto_id` **PK**, nombre, marca, categoria, color, stock, precio_venta)
+* **PERSONA** (`persona_id` **PK**, numero_telefono, calle, localidad, provincia)
+* **CLIENTE** (`cliente_id` **PK**, `persona_id` **FK U**, dni_cliente **U**)
+* **PROVEEDOR** (`proveedor_id` **PK**, `persona_id` **FK U**, cuit **U**, razon_social)
+* **REGISTRO_VENTA** (`registro_venta_id` **PK**, `cliente_id` **FK**, `producto_id` **FK**, fecha_compra, cantidad, precio_unitario, monto_total, metodo_pago)
+* **REGISTRO_COMPRA** (`registro_compra_id` **PK**, `proveedor_id` **FK**, `producto_id` **FK**, fecha, cantidad, metodo_pago, monto_total)
 
 ---
 
 ### 4. Justificación
-En el esquema final no se identifican dependencias transitivas entre atributos no clave. Cada atributo descriptivo depende directamente de la clave primaria de su relación. De esta forma, el modelo alcanza la **Tercera Forma Normal (3FN)**, disminuyendo la redundancia y favoreciendo la consistencia e integridad de los datos.
+Persona permite compartir el contacto entre Cliente y Proveedor. Esto no demuestra por sí solo que todo el modelo cumpla estrictamente 3FN: el total de venta se guarda aunque se calcula con cantidad y precio_unitario, por lo que esa redundancia debe reconocerse. El procedimiento mantiene el cálculo al registrar la venta.

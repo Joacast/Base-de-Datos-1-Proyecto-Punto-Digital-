@@ -5,17 +5,17 @@ GO
 -- ETAPA V - ITEM 4: ÍNDICES (CREACIÓN DE LA ESTRUCTURA DE OPTIMIZACIÓN)
 -- ============================================================================
 
--- 1. ÍNDICE PARA CLIENTES (Optimiza el filtrado por provincia)
--- Creación de un índice no agrupado sobre la columna 'provincia' de la tabla 'cliente'.
+-- 1. ÍNDICE PARA PERSONAS (Optimiza el filtrado por provincia)
+-- Creación de un índice no agrupado sobre la columna 'provincia' de la tabla 'persona'.
 -- Se utiliza la cláusula INCLUDE para agregar columnas consultadas frecuentemente (Covering Index),
--- evitando accesos innecesarios a la tabla base (Bookmark Lookups).
-IF EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_cliente_provincia' AND object_id = OBJECT_ID('cliente'))
-    DROP INDEX IX_cliente_provincia ON cliente;
+-- El DNI se obtiene de cliente mediante JOIN; el contacto está en persona.
+IF EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_persona_provincia' AND object_id = OBJECT_ID('persona'))
+    DROP INDEX IX_persona_provincia ON persona;
 GO
 
-CREATE NONCLUSTERED INDEX IX_cliente_provincia
-ON cliente (provincia)
-INCLUDE (dni_cliente, numero_telefono);
+CREATE NONCLUSTERED INDEX IX_persona_provincia
+ON persona (provincia)
+INCLUDE (numero_telefono);
 GO
 
 

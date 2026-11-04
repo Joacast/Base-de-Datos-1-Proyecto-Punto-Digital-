@@ -4,37 +4,53 @@
 -- BASE DE DATOS: PUNTO DIGITAL (EQUIPO 14)
 -- ============================================================================
 
--- ----------------------------------------------------------------------------
--- 1. TABLA: cliente (10 registros)
--- ----------------------------------------------------------------------------
-INSERT INTO cliente (dni_cliente, numero_telefono, calle, localidad, provincia) VALUES
-('40112233', '3794111222', 'San Juan 450', 'Corrientes', 'Corrientes'),
-('41223344', '3794222333', 'Córdoba 780', 'Corrientes', 'Corrientes'),
-('42334455', '3794333444', 'Mendoza 1120', 'Corrientes', 'Corrientes'),
-('43445566', '3794444555', 'Salta 630', 'Resistencia', 'Chaco'),
-('44556677', '3794555666', 'Bolívar 910', 'Corrientes', 'Corrientes'),
-('45667788', '3794666777', 'Belgrano 1340', 'Resistencia', 'Chaco'),
-('46778899', '3794777888', 'San Martín 520', 'Corrientes', 'Corrientes'),
-('47889900', '3794888999', '25 de Mayo 1680', 'Corrientes', 'Corrientes'),
-('48990011', '3794999000', 'Plácido Martínez 820', 'Paso de la Patria', 'Corrientes'),
-('49001122', '3794000111', 'Vera 1050', 'Goya', 'Corrientes');
+-- Persona: 1 a 10 para clientes, 11 a 20 para proveedores.
+INSERT INTO persona (numero_telefono, calle, localidad, provincia) VALUES
+('3794111222', 'San Juan 450', 'Corrientes', 'Corrientes'),
+('3794222333', 'Córdoba 780', 'Corrientes', 'Corrientes'),
+('3794333444', 'Mendoza 1120', 'Corrientes', 'Corrientes'),
+('3794444555', 'Salta 630', 'Resistencia', 'Chaco'),
+('3794555666', 'Bolívar 910', 'Corrientes', 'Corrientes'),
+('3794666777', 'Belgrano 1340', 'Resistencia', 'Chaco'),
+('3794777888', 'San Martín 520', 'Corrientes', 'Corrientes'),
+('3794888999', '25 de Mayo 1680', 'Corrientes', 'Corrientes'),
+('3794999000', 'Plácido Martínez 820', 'Paso de la Patria', 'Corrientes'),
+('3794000111', 'Vera 1050', 'Goya', 'Corrientes'),
+(NULL, 'Av. 3 de Abril 1240', 'Corrientes', 'Corrientes'),
+(NULL, 'Carlos Pellegrini 850', 'Corrientes', 'Corrientes'),
+(NULL, 'Junín 1580', 'Corrientes', 'Corrientes'),
+(NULL, 'San Lorenzo 1020', 'Resistencia', 'Chaco'),
+(NULL, '9 de Julio 950', 'Corrientes', 'Corrientes'),
+(NULL, 'Catamarca 430', 'Resistencia', 'Chaco'),
+(NULL, 'Santa Fe 780', 'Corrientes', 'Corrientes'),
+(NULL, 'Rivadavia 1120', 'Corrientes', 'Corrientes'),
+(NULL, 'España 640', 'Resistencia', 'Chaco'),
+(NULL, 'Yrigoyen 1430', 'Corrientes', 'Corrientes');
 
--- ----------------------------------------------------------------------------
--- 2. TABLA: proveedor (10 registros)
--- ----------------------------------------------------------------------------
-INSERT INTO proveedor (cuit, razon_social, calle, localidad, provincia) VALUES
-('30-71234567-8', 'Distribuidora Tech Corrientes SRL', 'Av. 3 de Abril 1240', 'Corrientes', 'Corrientes'),
-('30-71890123-4', 'NEA Mayorista Electrónica', 'Carlos Pellegrini 850', 'Corrientes', 'Corrientes'),
-('30-71998877-6', 'Accesorios del Litoral SA', 'Junín 1580', 'Corrientes', 'Corrientes'),
-('30-71445566-2', 'Importaciones Norte SA', 'San Lorenzo 1020', 'Resistencia', 'Chaco'),
-('30-71556677-3', 'MegaTech Argentina', '9 de Julio 950', 'Corrientes', 'Corrientes'),
-('30-71667788-5', 'Global Cables y Conectividad', 'Catamarca 430', 'Resistencia', 'Chaco'),
-('30-71778899-7', 'Audio Pro Mayorista', 'Santa Fe 780', 'Corrientes', 'Corrientes'),
-('30-71889900-9', 'Vidrios y Protectores NEA', 'Rivadavia 1120', 'Corrientes', 'Corrientes'),
-('30-71990011-1', 'Central Gadgets SA', 'España 640', 'Resistencia', 'Chaco'),
-('30-71001122-0', 'Electro Corrientes Mayorista', 'Yrigoyen 1430', 'Corrientes', 'Corrientes');
+INSERT INTO cliente (persona_id, dni_cliente) VALUES
+(1, '40112233'),
+(2, '41223344'),
+(3, '42334455'),
+(4, '43445566'),
+(5, '44556677'),
+(6, '45667788'),
+(7, '46778899'),
+(8, '47889900'),
+(9, '48990011'),
+(10, '49001122');
 
--- ----------------------------------------------------------------------------
+INSERT INTO proveedor (persona_id, cuit, razon_social) VALUES
+(11, '30-71234567-8', 'Distribuidora Tech Corrientes SRL'),
+(12, '30-71890123-4', 'NEA Mayorista Electrónica'),
+(13, '30-71998877-6', 'Accesorios del Litoral SA'),
+(14, '30-71445566-2', 'Importaciones Norte SA'),
+(15, '30-71556677-3', 'MegaTech Argentina'),
+(16, '30-71667788-5', 'Global Cables y Conectividad'),
+(17, '30-71778899-7', 'Audio Pro Mayorista'),
+(18, '30-71889900-9', 'Vidrios y Protectores NEA'),
+(19, '30-71990011-1', 'Central Gadgets SA'),
+(20, '30-71001122-0', 'Electro Corrientes Mayorista');
+
 -- 3. TABLA: producto (10 registros - Exclusivo Samsung y Apple)
 -- ----------------------------------------------------------------------------
 INSERT INTO producto (nombre, marca, categoria, color, stock, precio_venta) VALUES

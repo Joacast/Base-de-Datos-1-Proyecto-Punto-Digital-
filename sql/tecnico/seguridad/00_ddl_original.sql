@@ -2,28 +2,40 @@
 -- PROYECTO PUNTO DIGITAL - ETAPA III: IMPLEMENTACIÓN FÍSICA
 -- Script DDL: Creación de Tablas Base
 ---------------------------------------------------------
--- TABLA: CLIENTE
-CREATE TABLE cliente (
-    cliente_id INT IDENTITY(1,1),
-    dni_cliente VARCHAR(15) NOT NULL,
+-- Ejecutar una sola vez en una base nueva.
+-- TABLA: PERSONA
+CREATE TABLE persona (
+    persona_id INT IDENTITY(1,1),
     numero_telefono VARCHAR(20) NULL,
     calle VARCHAR(100) NOT NULL,
     localidad VARCHAR(100) NOT NULL,
     provincia VARCHAR(100) NOT NULL,
+    CONSTRAINT pk_persona PRIMARY KEY (persona_id)
+);
+
+-- TABLA: CLIENTE
+CREATE TABLE cliente (
+    cliente_id INT IDENTITY(1,1),
+    persona_id INT NOT NULL,
+    dni_cliente VARCHAR(15) NOT NULL,
     CONSTRAINT pk_cliente PRIMARY KEY (cliente_id),
-    CONSTRAINT uq_cliente_dni UNIQUE (dni_cliente)
+    CONSTRAINT uq_cliente_dni UNIQUE (dni_cliente),
+    CONSTRAINT uq_cliente_persona UNIQUE (persona_id),
+    CONSTRAINT fk_cliente_persona FOREIGN KEY (persona_id)
+        REFERENCES persona (persona_id)
 );
 
 -- TABLA: PROVEEDOR
 CREATE TABLE proveedor (
     proveedor_id INT IDENTITY(1,1),
+    persona_id INT NOT NULL,
     cuit VARCHAR(20) NOT NULL,
     razon_social VARCHAR(100) NOT NULL,
-    calle VARCHAR(100) NOT NULL,
-    localidad VARCHAR(100) NOT NULL,
-    provincia VARCHAR(100) NOT NULL,
     CONSTRAINT pk_proveedor PRIMARY KEY (proveedor_id),
-    CONSTRAINT uq_proveedor_cuit UNIQUE (cuit)
+    CONSTRAINT uq_proveedor_cuit UNIQUE (cuit),
+    CONSTRAINT uq_proveedor_persona UNIQUE (persona_id),
+    CONSTRAINT fk_proveedor_persona FOREIGN KEY (persona_id)
+        REFERENCES persona (persona_id)
 );
 
 -- TABLA: PRODUCTO
@@ -49,7 +61,7 @@ CREATE TABLE registro_venta (
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(10, 2) NOT NULL, -- Historial de precio congelado
     monto_total DECIMAL(10, 2) NOT NULL,
-    metodo_pago VARCHAR(30) NOT NULL, 
+    metodo_pago VARCHAR(30) NOT NULL,
 
     CONSTRAINT pk_registro_venta PRIMARY KEY (registro_venta_id),
     CONSTRAINT fk_venta_cliente FOREIGN KEY (cliente_id)

@@ -9,6 +9,6 @@ En nuestro caso de estudio, la base de datos registra operaciones continuas de v
 
 Para optimizar el rendimiento en Punto Digital, se aplicaron dos índices no agrupados estratégicos:
 
-IX_cliente_provincia: Optimiza la consulta del segmento de clientes filtrados por provincia (como Corrientes), evitando escanear toda la tabla cliente. Además, mediante la cláusula INCLUDE, se incorporan los campos dni_cliente y numero_telefono, logrando una consulta de cobertura (Covering Index) que satisface la búsqueda sin necesidad de lecturas adicionales a la tabla base.
+IX_persona_provincia: índice sobre la provincia de Persona, que ahora guarda el domicilio. Incluye numero_telefono. La consulta une Persona con Cliente para obtener el DNI; el índice no contiene todos los campos de esa consulta.
 
 IX_registro_venta_fecha_compra: Optimiza las búsquedas y filtrados por rangos de fecha sobre las transacciones en registro_venta, permitiendo acelerar la generación de reportes mensuales e informes de ventas por categoría sin impactar el tiempo de ejecución.

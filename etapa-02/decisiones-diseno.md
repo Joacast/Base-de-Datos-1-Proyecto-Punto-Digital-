@@ -1,8 +1,8 @@
 ### Decisiones de Mapeo Relacional y Estructura de Tablas
 Mapeo de la Jerarquía/Especialización de PERSONA
-Decisión de Mapeo: Se resolvió implementar la herencia utilizando una tabla base PERSONA relacionada de 1 a 1 ($1:1$) mediante Claves Primarias/Foráneas compartidas (id_persona) con las tablas CLIENTE y PROVEEDOR.
+Decisión de Mapeo: PERSONA guarda teléfono, calle, localidad y provincia. CLIENTE y PROVEEDOR conservan sus identificadores propios y tienen persona_id como clave foránea obligatoria y única. Una Persona puede ser cliente y proveedor, con un registro por cada rol. No se utilizan claves primarias compartidas.
 
-Justificación: Mantiene los datos compartidos (nombre, apellido, DNI/CUIT, dirección, teléfono) sin redundancia en una sola tabla, garantizando que un cliente o proveedor mantengan integridad referencial sin duplicar campos de contacto ni tablas innecesarias.
+Justificación: Centraliza domicilio y teléfono. El DNI permanece en CLIENTE; CUIT y razón social permanecen en PROVEEDOR.
 
 ### Resolución de Relaciones Muchos a Muchos (N:M)
 Decisión:Proveedores y Productos: La relación N:M entre PROVEEDOR y PRODUCTO se convierte en la tabla intermedia PROVEEDOR_PRODUCTO (o SUMINISTRA).
@@ -22,7 +22,7 @@ Justificación: Garantiza la entidad débil/dependiente: un renglón de detalle 
 
 # Justificación de Normalización (1FN, 2FN, 3FN)
 ## Primera Forma Normal (1FN) - Atomicidad de Atributos
-Decisión: Todos los atributos son atómicos. La dirección se descompuso físicamente en las columnas calle, altura, localidad y provincia.
+Decisión: Todos los atributos son atómicos. La dirección se guarda en PERSONA mediante calle, localidad y provincia; el número forma parte del texto de calle.
 
 Justificación: Elimina atributos compuestos y multivaluados dentro de las filas, asegurando que no existan listas de valores en una sola celda.
 
@@ -43,9 +43,9 @@ Decisión: El atributo stock en PRODUCTO representa el stock disponible real. Se
 Justificación: Asegura respuestas rápidas en consultas de disponibilidad en punto de venta sin requerir calcular la sumatoria histórica de compras y ventas en cada lectura.
 
 ## Gestión de Teléfonos Multivaluados (Vías de Contacto)
-Decisión: Se resolvió crear la tabla dependiente TELEFONO_PERSONA con una clave compuesta (id_persona, telefono).
+Decisión: PERSONA tiene un único numero_telefono opcional. No se implementó TELEFONO_PERSONA.
 
-Justificación: Cumple estrictamente con la 1FN al aislar los teléfonos multivaluados de la tabla principal PERSONA, permitiendo almacenar múltiples números (celular, fijo, trabajo) por cliente o proveedor.
+Justificación: Se guarda un valor por teléfono y se comparte el contacto entre los roles de una misma Persona.
 
 ## Mapeo de Tipos de Datos e Integridad Dominio
 Decisión: Uso estricto de tipos de datos adecuados (ej. DECIMAL(10,2) para importes/precios, DATETIME o TIMESTAMP para fechas de operaciones, INT para cantidades).

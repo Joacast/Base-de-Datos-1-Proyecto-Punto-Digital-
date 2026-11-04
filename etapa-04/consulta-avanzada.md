@@ -10,7 +10,7 @@ Para ello, se considerarán clientes VIP aquellos cuyo monto acumulado de compra
 
 Esta información le permitirá al gerente comercial reconocer a los clientes que representan un mayor volumen de compras y orientar las acciones promocionales hacia ellos, con el objetivo de fortalecer la relación con los clientes, incentivar nuevas compras y fomentar su fidelización.
 
-La consulta utiliza las tablas `cliente` y `registro_venta` para relacionar los datos identificatorios de los clientes, su provincia de residencia y los montos de las ventas registradas. Mediante las cláusulas `WHERE`, `GROUP BY` y `HAVING`, se seleccionan los clientes de Corrientes, se agrupan sus registros de venta y se filtran aquellos cuyo monto acumulado supera el límite establecido de $50.000.
+La consulta utiliza las tablas `persona`, `cliente` y `registro_venta` para relacionar los datos identificatorios de los clientes, su provincia de residencia y los montos de las ventas registradas. Mediante las cláusulas `WHERE`, `GROUP BY` y `HAVING`, se seleccionan los clientes de Corrientes, se agrupan sus registros de venta y se filtran aquellos cuyo monto acumulado supera el límite establecido de $50.000.
 
 **Resultado esperado:** obtener un listado de clientes de Corrientes que superen el monto acumulado definido, junto con sus datos identificatorios y el total registrado de sus compras, para facilitar la selección de destinatarios de una promoción comercial exclusiva.
 
@@ -21,17 +21,18 @@ La consulta utiliza las tablas `cliente` y `registro_venta` para relacionar los 
 SELECT
     c.cliente_id,
     c.dni_cliente,
-    c.provincia,
+    pe.provincia,
     COUNT(rv.registro_venta_id) AS total_registros_venta,
     SUM(rv.monto_total) AS monto_total_acumulado
 FROM cliente c
+INNER JOIN persona pe ON c.persona_id = pe.persona_id
 INNER JOIN registro_venta rv
     ON c.cliente_id = rv.cliente_id
-WHERE c.provincia = 'Corrientes'
+WHERE pe.provincia = 'Corrientes'
 GROUP BY
     c.cliente_id,
     c.dni_cliente,
-    c.provincia
+    pe.provincia
 HAVING SUM(rv.monto_total) > 50000.00
 ORDER BY monto_total_acumulado DESC;
 ```
@@ -44,7 +45,7 @@ ORDER BY monto_total_acumulado DESC;
 SELECT
     c.cliente_id,
     c.dni_cliente,
-    c.provincia,
+    pe.provincia,
     COUNT(rv.registro_venta_id) AS total_registros_venta,
     SUM(rv.monto_total) AS monto_total_acumulado
 ```
@@ -63,13 +64,14 @@ Los alias `total_registros_venta` y `monto_total_acumulado` permiten identificar
 
 ```sql
 FROM cliente c
+INNER JOIN persona pe ON c.persona_id = pe.persona_id
 INNER JOIN registro_venta rv
     ON c.cliente_id = rv.cliente_id
 ```
 
 Se utilizan las tablas necesarias para relacionar la información de los clientes con sus registros de venta.
 
-- `cliente` aporta el identificador del cliente, el DNI y la provincia.
+- `cliente` aporta el identificador y el DNI; `persona` aporta la provincia mediante persona_id.
 - `registro_venta` aporta los registros de venta y sus montos totales.
 
 La cláusula `INNER JOIN` combina las filas de ambas tablas que cumplen la condición establecida mediante `ON`.
@@ -81,7 +83,7 @@ De esta manera, cada registro de venta queda asociado al cliente correspondiente
 ### 3.3. WHERE
 
 ```sql
-WHERE c.provincia = 'Corrientes'
+WHERE pe.provincia = 'Corrientes'
 ```
 
 Esta condición filtra los registros para considerar únicamente a los clientes cuya provincia registrada es Corrientes.
@@ -94,7 +96,7 @@ El filtro se aplica antes de agrupar los registros y calcular los resultados agr
 GROUP BY
     c.cliente_id,
     c.dni_cliente,
-    c.provincia
+    pe.provincia
 ```
 
 Agrupa los registros correspondientes a cada cliente según su identificador, DNI y provincia.

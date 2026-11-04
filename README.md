@@ -69,9 +69,9 @@ Comprende la representación del caso de estudio mediante un Diagrama Entidad-Re
 | Documento | Descripción |
 | :--- | :--- |
 | `der/DER.jpeg` | Diagrama Entidad-Relación del caso de estudio, con sus entidades, atributos y relaciones. |
-| `Modelo_Relacional.png` | Representación gráfica del modelo relacional, con sus tablas, claves y relaciones. |
+| `Modelo_Relacional.png` | Representación gráfica del modelo relacional con Persona, Cliente y Proveedor; pendiente de ajustar sus campos al DDL actual. |
 | `normalizacion.md` | Desarrollo del proceso de normalización: primera, segunda y tercera forma normal. |
-| `decisiones-diseno.md` | Decisiones documentadas sobre mapeo de PERSONA, relaciones N:M, claves simples y compuestas, normalización y manejo de datos. |
+| `decisiones-diseno.md` | Decisiones sobre Persona, sus relaciones con Cliente y Proveedor, claves y normalización. |
 
 ### Etapa 03 — Implementación física
 Esta etapa comprende la definición de la estructura física de la base de datos, el establecimiento de restricciones de integridad y la validación de los datos mediante pruebas de consistencia.
