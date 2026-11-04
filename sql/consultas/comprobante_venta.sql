@@ -24,7 +24,7 @@ SELECT
     -- CÁLCULOS
     (v.cantidad * v.precio_unitario)                          AS subtotal_renglon,
     
-    -- Calcula el total acumulado de toda la venta por si tiene varios ítems
+    -- El ID es único: esta partición contiene un solo registro.
     SUM(v.cantidad * v.precio_unitario) OVER(
         PARTITION BY v.registro_venta_id
     )                                                         AS total_comprobante

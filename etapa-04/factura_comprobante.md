@@ -4,15 +4,15 @@
 
 ## 1. Caso de uso de negocio
 
-El área de atención al cliente y facturación de Punto Digital requiere generar un comprobante o factura de venta consolidado a partir de un registro de compra seleccionado.
+El área de atención al cliente y facturación de Punto Digital requiere generar un comprobante a partir de un registro de venta seleccionado.
 
-El objetivo es obtener una vista unificada que contenga la información del encabezado (datos de la venta y del cliente) junto con el detalle de los productos adquiridos, calculando automáticamente el subtotal correspondiente a cada renglón y el total acumulado general de la operación.
+El objetivo es obtener los datos de la venta y del cliente junto con el producto vendido, su cantidad, precio unitario e importe. Cada registro de venta corresponde a un solo producto.
 
 Esta consulta facilita la emisión de comprobantes impresos o digitales, garantizando transparencia en el desglose de precios y cantidades para el cliente y optimizando el control administrativo de las operaciones comerciales.
 
 Para consolidar la información, se relacionan la tabla principal `registro_venta` con las tablas `cliente` y `producto` mediante sus respectivos identificadores (`cliente_id` y `producto_id`).
 
-**Resultado esperado:** Obtener el detalle completo de la venta indicada (por ejemplo, `registro_venta_id = 1`), mostrando datos del comprobante, información del cliente, especificación de productos, subtotal por renglón y total general acumulado.
+**Resultado esperado:** Obtener el detalle completo de la venta indicada (por ejemplo, `registro_venta_id = 1`), mostrando datos del comprobante, información del cliente, especificación del producto, cantidad e importe del registro.
 
 ## 2. Consulta SQL
 
@@ -43,7 +43,7 @@ SELECT
     -- CÁLCULOS
     (v.cantidad * v.precio_unitario)                          AS subtotal_renglon,
     
-    -- Calcula el total acumulado de toda la venta por si tiene varios ítems
+    -- El ID es único: esta partición contiene un solo registro.
     SUM(v.cantidad * v.precio_unitario) OVER(
         PARTITION BY v.registro_venta_id
     )                                                         AS total_comprobante
@@ -102,7 +102,7 @@ SUM(v.cantidad * v.precio_unitario) OVER(
 Se realizan dos cálculos aritméticos clave:
 
 - **Subtotal por renglón:** multiplica la cantidad de unidades por su precio unitario (`v.cantidad * v.precio_unitario`) para determinar el importe del ítem específico.
-- **Total comprobante:** utiliza la función de ventana `SUM(...) OVER(PARTITION BY v.registro_venta_id)` para sumar los subtotales de todos los renglones asociados a la misma venta sin necesidad de colapsar o agrupar las filas con `GROUP BY`. De este modo, en cada línea del comprobante se mantiene visibilidad tanto del valor individual del ítem como del total general acumulado de la compra.
+- **Total comprobante:** utiliza `SUM(...) OVER(PARTITION BY v.registro_venta_id)`. Como `registro_venta_id` es una clave primaria única, cada partición contiene una sola fila y el resultado coincide con `cantidad * precio_unitario`. En este esquema la función de ventana es redundante; no agrupa varios productos.
 
 ### 3.4. WHERE
 
@@ -110,11 +110,11 @@ Se realizan dos cálculos aritméticos clave:
 WHERE v.registro_venta_id = 1;
 ```
 
-Filtra el resultado para obtener exclusivamente los renglones y la información perteneciente a un comprobante específico (en este ejemplo, el registro N° 1).
+Filtra el resultado para obtener exclusivamente el registro de venta N° 1 y sus datos relacionados.
 
 ## 4. Interpretación de los resultados
 
-La consulta devuelve el desglose de la venta seleccionada. Cada fila devuelta representa un renglón/producto del comprobante e incluye:
+La consulta devuelve una fila si existe la venta seleccionada. Esa fila corresponde a un producto e incluye:
 
 - **nro_comprobante:** número de factura o transacción.
 - **fecha_emision:** fecha de realización de la venta.
@@ -123,6 +123,6 @@ La consulta devuelve el desglose de la venta seleccionada. Cada fila devuelta re
 - **descripcion_producto / marca / categoria:** detalle del artículo.
 - **cantidad / precio_unitario:** volumen e importe por unidad.
 - **subtotal_renglon:** importe parcial correspondiente a ese producto.
-- **total_comprobante:** importe total acumulado de toda la venta.
+- **total_comprobante:** importe calculado para ese registro de venta.
 
-En caso de que el comprobante contenga múltiples productos, se mostrará una fila por cada ítem conservando el mismo encabezado y el mismo `total_comprobante`, permitiendo una lectura clara tanto para la vista de impresión como para auditorías internas.
+El modelo actual no tiene un identificador común que agrupe distintos registros en un comprobante de varios productos. Si el registro indicado no existe, la consulta no devuelve filas.

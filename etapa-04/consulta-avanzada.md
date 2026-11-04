@@ -24,6 +24,17 @@ SELECT
     c.provincia,
     COUNT(rv.registro_venta_id) AS total_registros_venta,
     SUM(rv.monto_total) AS monto_total_acumulado
+FROM cliente c
+INNER JOIN registro_venta rv
+    ON c.cliente_id = rv.cliente_id
+WHERE c.provincia = 'Corrientes'
+GROUP BY
+    c.cliente_id,
+    c.dni_cliente,
+    c.provincia
+HAVING SUM(rv.monto_total) > 50000.00
+ORDER BY monto_total_acumulado DESC;
+```
 
 ## 3. Explicación de la consulta
 
@@ -135,14 +146,3 @@ Cada fila contiene el identificador del cliente, su DNI, la provincia, la cantid
 Los clientes aparecen ordenados desde el mayor monto acumulado hasta el menor. Si ningún cliente supera el importe establecido, la consulta no devuelve filas.
 
 Esta información permite al gerente comercial identificar a los clientes con mayor volumen de compras registradas en la provincia de Corrientes y utilizar esos datos como criterio para orientar las promociones comerciales y las acciones de fidelización.
-FROM cliente c
-INNER JOIN registro_venta rv
-    ON c.cliente_id = rv.cliente_id
-WHERE c.provincia = 'Corrientes'
-GROUP BY
-    c.cliente_id,
-    c.dni_cliente,
-    c.provincia
-HAVING SUM(rv.monto_total) > 50000.00
-ORDER BY monto_total_acumulado DESC;
-```

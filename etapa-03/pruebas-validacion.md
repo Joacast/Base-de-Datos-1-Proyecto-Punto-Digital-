@@ -126,14 +126,16 @@ Se terminó la instrucción.
 
 **Objetivo:** Comprobar que no se puedan registrar ventas asociadas a identificadores de cliente que no existan en la tabla padre (`FOREIGN KEY`).
 
-**Sentencia SQL ejecutada:**
+**Sentencia SQL para comprobar la restricción:**
+
+Se incluye un método de pago válido para que el rechazo corresponda al cliente inexistente. Para repetir la prueba, el producto 1 debe existir y el cliente 999 no debe existir.
 
 ```sql
-INSERT INTO registro_venta (cliente_id, producto_id, fecha_compra, cantidad, precio_unitario, monto_total)
-VALUES (999, 1, GETDATE(), 1, 12500.00, 12500.00);
+INSERT INTO registro_venta (cliente_id, producto_id, fecha_compra, cantidad, precio_unitario, monto_total, metodo_pago)
+VALUES (999, 1, GETDATE(), 1, 12500.00, 12500.00, 'Efectivo');
 ```
 
-**Respuesta de SQL Server (mensaje de error):**
+**Respuesta esperada de SQL Server (el nombre de la base y la línea pueden variar):**
 
 ```text
 Mens. 547, Nivel 16, Estado 0, Línea 1
