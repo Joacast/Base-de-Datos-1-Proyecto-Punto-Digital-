@@ -1,0 +1,135 @@
+## Script SQL de demostración
+
+La demostración crea un producto de prueba, consulta sus valores originales, modifica su stock y precio y verifica que el trigger registre automáticamente el cambio.
+
+El producto de prueba utiliza un identificador generado automáticamente mediante `IDENTITY`, por lo que no es necesario asumir un `producto_id` fijo.
+
+```sql
+USE punto_digital;
+GO
+
+/* ============================================================
+   1. INSERTAR UN PRODUCTO DE PRUEBA
+   ============================================================ */
+
+INSERT INTO dbo.producto
+(
+    nombre,
+    marca,
+    categoria,
+    color,
+    stock,
+    precio_venta
+)
+VALUES
+(
+    'Producto de prueba auditoria',
+    'Marca Demo',
+    'Categoria Demo',
+    'Color Demo',
+    10,
+    1500.00
+);
+GO
+
+
+/* ============================================================
+   2. OBTENER EL ID DEL PRODUCTO INSERTADO
+   ============================================================ */
+
+DECLARE @producto_prueba_id INT;
+
+SET @producto_prueba_id = SCOPE_IDENTITY();
+
+SELECT
+    producto_id,
+    nombre,
+    stock,
+    precio_venta
+FROM dbo.producto
+WHERE producto_id = @producto_prueba_id;
+
+
+/* ============================================================
+   3. MODIFICAR STOCK Y PRECIO
+   El trigger se ejecuta automáticamente.
+   ============================================================ */
+
+UPDATE dbo.producto
+SET
+    stock = 15,
+    precio_venta = 1600.00
+WHERE producto_id = @producto_prueba_id;
+
+
+/* ============================================================
+   4. CONSULTAR LOS VALORES ACTUALIZADOS
+   ============================================================ */
+
+SELECT
+    producto_id,
+    nombre,
+    stock,
+    precio_venta
+FROM dbo.producto
+WHERE producto_id = @producto_prueba_id;
+
+
+/* ============================================================
+   5. CONSULTAR EL REGISTRO DE AUDITORÍA
+   ============================================================ */
+
+SELECT
+    auditoria_id,
+    producto_id,
+    stock_anterior,
+    stock_nuevo,
+    precio_anterior,
+    precio_nuevo,
+    fecha_cambio,
+    usuario_sql
+FROM dbo.auditoria_producto
+WHERE producto_id = @producto_prueba_id
+ORDER BY auditoria_id DESC;
+
+
+/* ============================================================
+   6. LIMPIAR LOS DATOS DE PRUEBA
+   ============================================================ */
+
+DELETE FROM dbo.auditoria_producto
+WHERE producto_id = @producto_prueba_id;
+
+DELETE FROM dbo.producto
+WHERE producto_id = @producto_prueba_id;
+GO
+```
+
+---
+
+## Resultados esperados
+
+### Producto antes de la modificación
+
+| producto_id | nombre | stock | precio_venta |
+|---|---|---:|---:|
+| ID generado | Producto de prueba auditoria | 10 | 1500.00 |
+
+### Producto después de la modificación
+
+| producto_id | nombre | stock | precio_venta |
+|---|---|---:|---:|
+| ID generado | Producto de prueba auditoria | 15 | 1600.00 |
+
+### Registro generado en la tabla de auditoría
+
+| producto_id | stock_anterior | stock_nuevo | precio_anterior | precio_nuevo |
+|---|---:|---:|---:|---:|
+| ID generado | 10 | 15 | 1500.00 | 1600.00 |
+
+Además, el resultado incluye el identificador de auditoría, la fecha y hora del cambio y el usuario de SQL que ejecutó la operación.
+
+Estos son los resultados esperados al ejecutar el script; los valores reales de `producto_id`, `auditoria_id`, `fecha_cambio` y `usuario_sql` dependerán de la base de datos y del entorno de ejecución.
+
+---
+
