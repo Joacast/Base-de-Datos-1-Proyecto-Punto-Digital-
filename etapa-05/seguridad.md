@@ -10,10 +10,8 @@
 
 Los archivos del tema Seguridad se encuentran en la carpeta [`sql/tecnico/seguridad`](../sql/tecnico/seguridad/):
 
-- [`00_ddl_original.sql`](../sql/tecnico/seguridad/00_ddl_original.sql): contiene la creación de las seis tablas del proyecto. Se utiliza únicamente si se prepara una base de prueba vacía.
-- [`01_implementacion.sql`](../sql/tecnico/seguridad/01_implementacion.sql): crea los usuarios, roles y permisos. Antes se deben instalar Transacciones y Procedimientos, porque se autoriza sp_registrar_venta.
-- [`02_pruebas.sql`](../sql/tecnico/seguridad/02_pruebas.sql): permite comprobar las operaciones autorizadas y denegadas para los distintos usuarios.
-- [`03_logins_opcional.sql`](../sql/tecnico/seguridad/03_logins_opcional.sql): incluye una plantilla opcional para asociar cuentas reales de Windows con usuarios y roles.
+- [`implementacion.sql`](../sql/tecnico/seguridad/implementacion.sql): crea los usuarios, roles y permisos. Antes se deben instalar Transacciones y Procedimientos, porque se autoriza sp_registrar_venta.
+- [`pruebas.sql`](../sql/tecnico/seguridad/pruebas.sql): permite comprobar las operaciones autorizadas y denegadas para los distintos usuarios.
 
 ### Demostración de utilización
 

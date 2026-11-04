@@ -2,21 +2,28 @@
 
 ## 1. Pruebas de Carga Exitosa (Script DML)
 
-Se ejecutó el script de datos de prueba (`DML.sql`) sobre el esquema relacional cargado mediante el script `DDL.sql`. Se verificó la inserción inicial exitosa de los registros obligatorios por tabla sin violar ninguna regla de integridad referencial ni de dominio.
+Este documento usa una carga reducida para probar las restricciones. Ejecutar primero `sql/ddl/crear_bd.sql` en una base de prueba nueva y vacía, y luego los INSERT de este documento, una sola vez. Los identificadores deben comenzar en 1. Esta carga se usa en lugar de `sql/dml/datos_prueba.sql`, no junto con ella.
 
 ### 1.1 Ejecución del Script DML (Poblado de Datos)
 
-**Comandos SQL ejecutados:**
+**Comandos SQL para ejecutar:**
 
 ```sql
-INSERT INTO cliente (dni_cliente, numero_telefono, calle, localidad, provincia) VALUES
-('35123456', '3794112233', 'Av. Libertad 123', 'Capital', 'Corrientes'),
-('38987654', '3794445566', 'Calle Junín 456', 'Capital', 'Corrientes'),
-('40111222', '3794778899', 'Bolívar 789', 'Resistencia', 'Chaco');
+INSERT INTO persona (numero_telefono, calle, localidad, provincia) VALUES
+('3794112233', 'Av. Libertad 123', 'Capital', 'Corrientes'),
+('3794445566', 'Calle Junín 456', 'Capital', 'Corrientes'),
+('3794778899', 'Bolívar 789', 'Resistencia', 'Chaco'),
+(NULL, 'Av. Italia 500', 'Resistencia', 'Chaco'),
+(NULL, 'Ruta 12 Km 10', 'Capital', 'Corrientes');
 
-INSERT INTO proveedor (cuit, razon_social, calle, localidad, provincia) VALUES
-('20-12345678-9', 'Distribuidora Central S.R.L.', 'Av. Italia 500', 'Resistencia', 'Chaco'),
-('30-98765432-1', 'Mayorista NEA S.A.', 'Ruta 12 Km 10', 'Capital', 'Corrientes');
+INSERT INTO cliente (persona_id, dni_cliente) VALUES
+(1, '35123456'),
+(2, '38987654'),
+(3, '40111222');
+
+INSERT INTO proveedor (persona_id, cuit, razon_social) VALUES
+(4, '20-12345678-9', 'Distribuidora Central S.R.L.'),
+(5, '30-98765432-1', 'Mayorista NEA S.A.');
 
 INSERT INTO producto (nombre, marca, categoria, color, stock, precio_venta) VALUES
 ('Mouse Óptico USB', 'Logitech', 'Periféricos', 'Negro', 15, 12500.00),
@@ -24,19 +31,19 @@ INSERT INTO producto (nombre, marca, categoria, color, stock, precio_venta) VALU
 ('Monitor 24 IPS', 'Samsung', 'Monitores', 'Negro', 5, 185000.00);
 ```
 
-**Salida en consola de SQL Server (mensajes):**
+**Salida esperada en consola:**
 
 ```text
+(5 filas afectadas)
 (3 filas afectadas)
 (2 filas afectadas)
 (3 filas afectadas)
 
-Hora de finalización: 2026-09-30T22:15:00.1234567-03:00
 ```
 
 ### 1.2 Verificación de Datos Almacenados (SELECT)
 
-Se ejecutaron consultas de selección para verificar la correcta recuperación y consistencia de los datos almacenados en el motor.
+Ejecutar las siguientes consultas para comprobar los datos de la carga reducida.
 
 **Consulta 1: Listado de productos**
 
@@ -45,7 +52,7 @@ SELECT producto_id, nombre, marca, stock, precio_venta
 FROM producto;
 ```
 
-**Grilla de resultados (SQL Server):**
+**Resultados esperados:**
 
 ```text
 producto_id | nombre               | marca    | stock | precio_venta
@@ -60,11 +67,13 @@ producto_id | nombre               | marca    | stock | precio_venta
 **Consulta 2: Listado de clientes registrados**
 
 ```sql
-SELECT cliente_id, dni_cliente, numero_telefono, localidad, provincia
-FROM cliente;
+SELECT c.cliente_id, c.dni_cliente, p.numero_telefono, p.localidad, p.provincia
+FROM cliente c
+INNER JOIN persona p ON c.persona_id = p.persona_id
+ORDER BY c.cliente_id;
 ```
 
-**Grilla de resultados (SQL Server):**
+**Resultados esperados:**
 
 ```text
 cliente_id | dni_cliente | numero_telefono | localidad   | provincia
@@ -80,20 +89,20 @@ cliente_id | dni_cliente | numero_telefono | localidad   | provincia
 
 ## 2. Pruebas de Restricciones (Validación de Reglas de Negocio)
 
-Para demostrar que el esquema físico ataja posibles datos inconsistentes, se provocaron errores intencionados ejecutando sentencias DML inválidas.
+Para demostrar que el esquema físico ataja posibles datos inconsistentes, se ejecutan por separado las siguientes sentencias inválidas. Deben rechazarse sin insertar filas. El nombre de la base y el texto exacto del error pueden variar según el entorno.
 
 ### Prueba 1: Violación de restricción CHECK (stock negativo)
 
 **Objetivo:** Garantizar que no se permitan productos con unidades de stock inferiores a cero (`CHECK (stock >= 0)`).
 
-**Sentencia SQL ejecutada:**
+**Sentencia SQL para ejecutar:**
 
 ```sql
 INSERT INTO producto (nombre, marca, categoria, color, stock, precio_venta)
 VALUES ('Auriculares Gamer', 'HyperX', 'Audio', 'Rojo', -5, 32000.00);
 ```
 
-**Respuesta de SQL Server (mensaje de error):**
+**Respuesta esperada de SQL Server:**
 
 ```text
 Mens. 547, Nivel 16, Estado 0, Línea 1
@@ -104,16 +113,16 @@ Se terminó la instrucción.
 
 ### Prueba 2: Violación de restricción UNIQUE (DNI duplicado)
 
-**Objetivo:** Verificar que el sistema impida el registro de clientes con un DNI ya existente en la base de datos (`UNIQUE (dni_cliente)`).
+**Objetivo:** Verificar que el sistema impida el registro de clientes con un DNI ya existente en la base de datos (`UNIQUE (dni_cliente)`). Se usa Persona 4, que existe y aún no tiene un registro de cliente, para que el rechazo corresponda al DNI duplicado.
 
-**Sentencia SQL ejecutada:**
+**Sentencia SQL para ejecutar:**
 
 ```sql
-INSERT INTO cliente (dni_cliente, numero_telefono, calle, localidad, provincia)
-VALUES ('35123456', '3794000000', 'San Martín 999', 'Capital', 'Corrientes');
+INSERT INTO cliente (persona_id, dni_cliente)
+VALUES (4, '35123456');
 ```
 
-**Respuesta de SQL Server (mensaje de error):**
+**Respuesta esperada de SQL Server:**
 
 ```text
 Mens. 2627, Nivel 14, Estado 1, Línea 1
@@ -148,14 +157,14 @@ Se terminó la instrucción.
 
 **Objetivo:** Validar que los métodos de pago registrados en las transacciones de compra se restrinjan únicamente a las opciones autorizadas.
 
-**Sentencia SQL ejecutada:**
+**Sentencia SQL para ejecutar:**
 
 ```sql
 INSERT INTO registro_compra (proveedor_id, producto_id, fecha, cantidad, metodo_pago, monto_total)
 VALUES (1, 1, GETDATE(), 10, 'Criptomonedas', 125000.00);
 ```
 
-**Respuesta de SQL Server (mensaje de error):**
+**Respuesta esperada de SQL Server:**
 
 ```text
 Mens. 547, Nivel 16, Estado 0, Línea 1
