@@ -2,10 +2,15 @@ USE punto_digital;
 GO
 
 -- ============================================================================
--- ETAPA V - ITEM 4: DEMOSTRACIÓN Y USO DE LOS ÍNDICES IMPLEMENTADOS
+-- ETAPA V - ITEM 4: DEMOSTRACIÓN Y COMPARACIÓN REAL DE RENDIMIENTO
 -- ============================================================================
 
--- DEMOSTRACIÓN A: Verificación física de la existencia de los índices en el motor
+-- 1. ACTIVAR ESTADÍSTICAS DE TIEMPO Y E/S (Muestra lecturas y CPU en la pestaña Mensajes)
+SET STATISTICS TIME ON;
+SET STATISTICS IO ON;
+GO
+
+-- 2. Verificación inicial de la existencia de los índices
 SELECT 
     t.name AS tabla,
     i.name AS nombre_indice,
@@ -18,16 +23,47 @@ ORDER BY t.name;
 GO
 
 
--- DEMOSTRACIÓN B: Optimización de la Consulta de Clientes VIP (Etapa IV)
--- El motor aprovecha el índice 'IX_persona_provincia' para buscar directamente a los
--- clientes de 'Corrientes' sin realizar un escaneo completo de toda la tabla (Table Scan).
+--------------------------------------------------------------------------------
+-- PARTE A: COMPARACIÓN PARA LA CONSULTA DE CLIENTES (Tabla PERSONA)
+--------------------------------------------------------------------------------
+
+-- A.1. Ejecución SIN el índice (Eliminamos temporalmente el índice para obligar al Scan)
+IF EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_persona_provincia' AND object_id = OBJECT_ID('persona'))
+    DROP INDEX IX_persona_provincia ON persona;
+GO
+
+PRINT '--- 1A. CONSULTA CLIENTES VIP POR PROVINCIA: SIN ÍNDICE (Table Scan) ---';
 SELECT 
     c.cliente_id, 
     c.dni_cliente, 
     pe.provincia,
     COUNT(rv.registro_venta_id) AS total_registros_venta, 
     SUM(rv.monto_total) AS monto_total_acumulado
-FROM persona pe WITH (INDEX (IX_persona_provincia))
+FROM persona pe
+INNER JOIN cliente c ON c.persona_id = pe.persona_id
+INNER JOIN registro_venta rv ON c.cliente_id = rv.cliente_id
+WHERE pe.provincia = 'Corrientes'
+GROUP BY c.cliente_id, c.dni_cliente, pe.provincia
+HAVING SUM(rv.monto_total) > 50000.00
+ORDER BY monto_total_acumulado DESC;
+GO
+
+-- A.2. Creación del índice correspondiente
+PRINT '--- CREANDO EL ÍNDICE IX_persona_provincia ---';
+CREATE NONCLUSTERED INDEX IX_persona_provincia
+ON persona (provincia)
+INCLUDE (persona_id);
+GO
+
+-- A.3. Ejecución CON el índice (El motor decide usarlo automáticamente)
+PRINT '--- 1B. CONSULTA CLIENTES VIP POR PROVINCIA: CON ÍNDICE (Index Seek) ---';
+SELECT 
+    c.cliente_id, 
+    c.dni_cliente, 
+    pe.provincia,
+    COUNT(rv.registro_venta_id) AS total_registros_venta, 
+    SUM(rv.monto_total) AS monto_total_acumulado
+FROM persona pe
 INNER JOIN cliente c ON c.persona_id = pe.persona_id
 INNER JOIN registro_venta rv ON c.cliente_id = rv.cliente_id
 WHERE pe.provincia = 'Corrientes'
@@ -37,17 +73,51 @@ ORDER BY monto_total_acumulado DESC;
 GO
 
 
--- DEMOSTRACIÓN C: Optimización del Reporte Agregado Mensual (Etapa IV)
--- El motor utiliza la estructura de árbol (B-Tree) del índice 'IX_registro_venta_fecha_compra' 
--- para filtrar con alta eficiencia el rango de fechas de agosto de 2026.
+
+--------------------------------------------------------------------------------
+-- PARTE B: COMPARACIÓN PARA EL REPORTE MENSUAL (Tabla REGISTRO_VENTA)
+--------------------------------------------------------------------------------
+
+-- B.1. Ejecución SIN el índice
+IF EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_registro_venta_fecha_compra' AND object_id = OBJECT_ID('registro_venta'))
+    DROP INDEX IX_registro_venta_fecha_compra ON registro_venta;
+GO
+
+PRINT '--- 2A. REPORTE MENSUAL DE VENTAS: SIN ÍNDICE (Clustered Index Scan) ---';
 SELECT 
     p.categoria AS Categoria, 
     COUNT(rv.registro_venta_id) AS Cantidad_Operaciones, 
     SUM(rv.cantidad) AS Unidades_Vendidas, 
     SUM(rv.monto_total) AS Total_Recaudado
-FROM registro_venta rv WITH (INDEX (IX_registro_venta_fecha_compra))
+FROM registro_venta rv
 INNER JOIN producto p ON rv.producto_id = p.producto_id
 WHERE rv.fecha_compra >= '2026-08-01' AND rv.fecha_compra < '2026-09-01'
 GROUP BY p.categoria
 ORDER BY Total_Recaudado DESC;
+GO
+
+-- B.2. Creación del índice
+PRINT '--- CREANDO EL ÍNDICE IX_registro_venta_fecha_compra ---';
+CREATE NONCLUSTERED INDEX IX_registro_venta_fecha_compra
+ON registro_venta (fecha_compra)
+INCLUDE (cliente_id, producto_id, cantidad, monto_total);
+GO
+
+-- B.3. Ejecución CON el índice
+PRINT '--- 2B. REPORTE MENSUAL DE VENTAS: CON EL ÍNDICE (Index Seek) ---';
+SELECT 
+    p.categoria AS Categoria, 
+    COUNT(rv.registro_venta_id) AS Cantidad_Operaciones, 
+    SUM(rv.cantidad) AS Unidades_Vendidas, 
+    SUM(rv.monto_total) AS Total_Recaudado
+FROM registro_venta rv
+INNER JOIN producto p ON rv.producto_id = p.producto_id
+WHERE rv.fecha_compra >= '2026-08-01' AND rv.fecha_compra < '2026-09-01'
+GROUP BY p.categoria
+ORDER BY Total_Recaudado DESC;
+GO
+
+-- 3. Desactivar estadísticas al finalizar
+SET STATISTICS TIME OFF;
+SET STATISTICS IO OFF;
 GO
